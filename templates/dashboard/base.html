@@ -1,0 +1,517 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Resort Admin Dashboard
+        {% endblock %}
+    </title>
+
+    <!-- Main Dashboard CSS -->
+    <link rel="stylesheet"
+          href="{% static 'css/dashboard.css' %}">
+
+    <!-- Payments CSS -->
+    <link rel="stylesheet"
+          href="{% static 'css/payments.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <div class="sidebar-logo">
+                🏨
+            </div>
+
+            <div>
+                <h2>ResortHub</h2>
+                <span>Admin Panel</span>
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             NAVIGATION
+        ========================== -->
+
+        <nav class="sidebar-nav">
+
+            <!-- Dashboard -->
+            <a href="{% url 'admin_dashboard' %}"
+               class="nav-item">
+
+                <span class="nav-icon">📊</span>
+
+                <span class="nav-text">
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 USERS
+            ====================== -->
+
+            <div class="nav-section-title">
+                MANAGEMENT
+            </div>
+
+            <a href="{% url 'user_list' %}"
+               class="nav-item">
+
+                <span class="nav-icon">👥</span>
+
+                <span class="nav-text">
+                    Users
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 PROPERTIES
+            ====================== -->
+
+            <a href="{% url 'property_list' %}"
+               class="nav-item">
+
+                <span class="nav-icon">🏨</span>
+
+                <span class="nav-text">
+                    Properties
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 BOOKINGS
+            ====================== -->
+
+            <a href="{% url 'booking_list' %}"
+               class="nav-item">
+
+                <span class="nav-icon">📅</span>
+
+                <span class="nav-text">
+                    Bookings
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 PAYMENTS
+            ====================== -->
+
+            <a href="{% url 'payment_dashboard' %}"
+               class="nav-item">
+
+                <span class="nav-icon">💳</span>
+
+                <span class="nav-text">
+                    Payments
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'payment_list' %}"
+               class="nav-item nav-sub-item">
+
+                <span class="nav-icon">•</span>
+
+                <span class="nav-text">
+                    All Payments
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 REVIEWS
+            ====================== -->
+
+            <a href="{% url 'review_dashboard' %}"
+                class="nav-item">
+
+                <span class="nav-icon">★</span>
+
+                <span class="nav-text">
+                    Reviews
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 REPORTS
+            ====================== -->
+
+            <div class="nav-section-title">
+                REPORTS
+            </div>
+
+            <a href="#"
+               class="nav-item">
+
+                <span class="nav-icon">📈</span>
+
+                <span class="nav-text">
+                    Analytics
+                </span>
+
+            </a>
+
+            <a href="#"
+               class="nav-item">
+
+                <span class="nav-icon">📑</span>
+
+                <span class="nav-text">
+                    Reports
+                </span>
+
+            </a>
+
+
+            <!-- =====================
+                 SYSTEM
+            ====================== -->
+
+            <div class="nav-section-title">
+                SYSTEM
+            </div>
+
+            <a href="#"
+               class="nav-item">
+
+                <span class="nav-icon">⚙️</span>
+
+                <span class="nav-text">
+                    Settings
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- =========================
+             SIDEBAR FOOTER
+        ========================== -->
+
+        <div class="sidebar-footer">
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">
+
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name|first|upper }}
+                    {% else %}
+                        {{ request.user.username|first|upper }}
+                    {% endif %}
+
+                </div>
+
+                <div class="admin-info">
+
+                    <strong>
+                        {% if request.user.get_full_name %}
+                            {{ request.user.get_full_name }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <a href="{% url 'admin_logout' %}"
+               class="logout-btn">
+
+                <span>🚪</span>
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+
+        <!-- =========================
+             TOP BAR
+        ========================== -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button type="button"
+                        class="sidebar-toggle"
+                        id="sidebarToggle">
+
+                    ☰
+
+                </button>
+
+                <div>
+
+                    <h1>
+                        {% block page_title %}
+                        {% endblock %}
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <!-- Notifications -->
+
+                <button type="button"
+                        class="topbar-icon"
+                        title="Notifications">
+
+                    🔔
+
+                    <span class="notification-dot"></span>
+
+                </button>
+
+
+                <!-- Admin -->
+
+                <div class="topbar-user">
+
+                    <div class="topbar-avatar">
+
+                        {% if request.user.first_name %}
+                            {{ request.user.first_name|first|upper }}
+                        {% else %}
+                            {{ request.user.username|first|upper }}
+                        {% endif %}
+
+                    </div>
+
+                    <div class="topbar-user-info">
+
+                        <strong>
+
+                            {% if request.user.get_full_name %}
+
+                                {{ request.user.get_full_name }}
+
+                            {% else %}
+
+                                {{ request.user.username }}
+
+                            {% endif %}
+
+                        </strong>
+
+                        <span>
+                            Admin
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================
+             DJANGO MESSAGES
+        ========================== -->
+
+        {% if messages %}
+
+            <div class="dashboard-messages">
+
+                {% for message in messages %}
+
+                    <div class="dashboard-message
+                        {% if message.tags %}
+                            {{ message.tags }}
+                        {% endif %}">
+
+                        <span class="message-icon">
+
+                            {% if message.tags == 'success' %}
+                                ✓
+
+                            {% elif message.tags == 'error' %}
+                                ✕
+
+                            {% elif message.tags == 'warning' %}
+                                ⚠
+
+                            {% else %}
+                                ℹ
+                            {% endif %}
+
+                        </span>
+
+                        <span class="message-text">
+                            {{ message }}
+                        </span>
+
+                        <button type="button"
+                                class="message-close"
+                                onclick="this.parentElement.remove()">
+
+                            ×
+
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+
+        <!-- =========================
+             PAGE CONTENT
+        ========================== -->
+
+        <section class="page-content">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <footer class="dashboard-footer">
+
+            <div>
+                © {% now "Y" %} ResortHub.
+                All rights reserved.
+            </div>
+
+            <div>
+                Resort Marketplace Admin
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     SIDEBAR MOBILE SCRIPT
+========================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const toggle =
+        document.getElementById("sidebarToggle");
+
+    const sidebar =
+        document.querySelector(".sidebar");
+
+    if (toggle && sidebar) {
+
+        toggle.addEventListener("click", function () {
+
+            sidebar.classList.toggle("sidebar-open");
+
+        });
+
+    }
+
+
+    /*
+     * Automatically close dashboard messages
+     * after 5 seconds.
+     */
+
+    setTimeout(function () {
+
+        const messages =
+            document.querySelectorAll(".dashboard-message");
+
+        messages.forEach(function (message) {
+
+            message.style.opacity = "0";
+
+            message.style.transform =
+                "translateY(-5px)";
+
+            setTimeout(function () {
+
+                message.remove();
+
+            }, 300);
+
+        });
+
+    }, 5000);
+
+});
+
+</script>
+
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>
+```

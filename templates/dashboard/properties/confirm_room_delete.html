@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Delete Room | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Delete Room
+    </h1>
+
+
+    <p>
+
+        Are you sure you want to delete:
+
+        <strong>
+            {{ room.name }}
+        </strong>
+
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <button
+            type="submit"
+            style="
+                padding:12px 18px;
+                background:#dc2626;
+                color:white;
+                border:none;
+                border-radius:7px;
+                cursor:pointer;
+            "
+        >
+            Delete Room
+        </button>
+
+
+        <a
+            href="{% url 'property_detail' room.property.id %}"
+            style="
+                display:inline-block;
+                padding:12px 18px;
+                background:#e5e7eb;
+                color:#111;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

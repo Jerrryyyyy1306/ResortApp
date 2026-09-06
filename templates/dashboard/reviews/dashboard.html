@@ -1,0 +1,267 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block title %}Reviews Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="review-page">
+
+    <div class="review-page-header">
+
+        <div>
+            <h1>Reviews</h1>
+            <p>Monitor and moderate customer reviews.</p>
+        </div>
+
+        <div class="review-header-actions">
+
+            <a href="{% url 'review_list' %}"
+               class="review-btn review-btn-secondary">
+                View All Reviews
+            </a>
+
+            <a href="{% url 'review_create' %}"
+               class="review-btn review-btn-primary">
+                + Add Review
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="review-stat-grid">
+
+        <div class="review-stat-card">
+            <div class="review-stat-icon">
+                ★
+            </div>
+
+            <div>
+                <span class="review-stat-label">
+                    Total Reviews
+                </span>
+
+                <strong>
+                    {{ total_reviews }}
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="review-stat-card">
+            <div class="review-stat-icon approved">
+                ✓
+            </div>
+
+            <div>
+                <span class="review-stat-label">
+                    Approved
+                </span>
+
+                <strong>
+                    {{ approved_reviews }}
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="review-stat-card">
+            <div class="review-stat-icon pending">
+                !
+            </div>
+
+            <div>
+                <span class="review-stat-label">
+                    Pending
+                </span>
+
+                <strong>
+                    {{ pending_reviews }}
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="review-stat-card">
+            <div class="review-stat-icon flagged">
+                ⚑
+            </div>
+
+            <div>
+                <span class="review-stat-label">
+                    Flagged
+                </span>
+
+                <strong>
+                    {{ flagged_reviews }}
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="review-stat-card">
+            <div class="review-stat-icon rating">
+                ★
+            </div>
+
+            <div>
+                <span class="review-stat-label">
+                    Average Rating
+                </span>
+
+                <strong>
+                    {{ average_rating }}/5
+                </strong>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="review-dashboard-grid">
+
+
+        <!-- RATING DISTRIBUTION -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+                <h2>Rating Distribution</h2>
+            </div>
+
+            <div class="review-card-body">
+
+                {% for rating, count in rating_distribution.items %}
+
+                <div class="rating-row">
+
+                    <span class="rating-number">
+                        {{ rating }} ★
+                    </span>
+
+                    <div class="rating-distribution">
+
+                        {% for item in rating_distribution %}
+
+                            <div class="rating-row">
+
+                                <span class="rating-number">
+                                    {{ item.rating }} ★
+                                </span>
+
+                                <div class="rating-bar">
+                                    <div class="rating-bar-fill"
+                                        data-width="{{ item.percentage }}">
+                                    </div>
+                                </div>
+
+                                <span class="rating-count">
+                                    {{ item.count }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <span class="rating-count">
+                        {{ count }}
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT REVIEWS -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+
+                <h2>Recent Reviews</h2>
+
+                <a href="{% url 'review_list' %}">
+                    View All
+                </a>
+
+            </div>
+
+            <div class="review-card-body">
+
+                {% if recent_reviews %}
+
+                    {% for review in recent_reviews %}
+
+                    <div class="recent-review">
+
+                        <div class="recent-review-top">
+
+                            <strong>
+                                {{ review.client.get_full_name|default:review.client.username }}
+                            </strong>
+
+                            <span class="review-stars">
+                                {{ review.stars_display }}
+                            </span>
+
+                        </div>
+
+                        <div class="recent-review-property">
+                            {{ review.property }}
+                        </div>
+
+                        <p>
+                            {{ review.short_comment }}
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="review-empty">
+                        <div>★</div>
+                        <p>No reviews yet.</p>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.rating-bar-fill').forEach(function (bar) {
+
+        const percentage = bar.getAttribute('data-width');
+
+        bar.style.width = percentage + '%';
+
+    });
+
+});
+</script>   

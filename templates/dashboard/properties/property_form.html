@@ -1,0 +1,158 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ page_title }} | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .form-container {
+        max-width: 1000px;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+    }
+
+    .errorlist {
+        color: #dc2626;
+    }
+
+    .buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .primary {
+        background: #111827;
+        color: white;
+    }
+
+    .secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+</style>
+
+
+<h1>
+    {{ page_title }}
+</h1>
+
+
+<div class="form-container">
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+
+        <div class="form-row">
+
+            {% for field in form %}
+
+                <div
+                    class="form-group
+                    {% if field.name == 'description' %}
+                        full
+                    {% elif field.name == 'amenities' %}
+                        full
+                    {% elif field.name == 'rejection_reason' %}
+                        full
+                    {% elif field.name == 'suspension_reason' %}
+                        full
+                    {% endif %}"
+                >
+
+                    {{ field.label_tag }}
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+
+                        <small>
+                            {{ field.help_text }}
+                        </small>
+
+                    {% endif %}
+
+                    {{ field.errors }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                type="submit"
+                class="btn primary"
+            >
+                {{ button_text }}
+            </button>
+
+
+            <a
+                href="{% url 'property_list' %}"
+                class="btn secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

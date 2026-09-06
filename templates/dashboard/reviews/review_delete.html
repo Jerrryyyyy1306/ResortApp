@@ -1,0 +1,74 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block title %}Delete Review{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="review-page">
+
+    <div class="review-delete-card">
+
+        <div class="review-delete-icon">
+            🗑
+        </div>
+
+        <h1>Delete Review?</h1>
+
+        <p>
+            Are you sure you want to permanently delete this review?
+        </p>
+
+        <div class="review-delete-preview">
+
+            <strong>
+                {{ review.title }}
+            </strong>
+
+            <span class="review-stars">
+                {{ review.stars_display }}
+            </span>
+
+            <p>
+                {{ review.short_comment }}
+            </p>
+
+        </div>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="review-delete-actions">
+
+                <a
+                    href="{% url 'review_detail' review.pk %}"
+                    class="review-btn review-btn-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="review-btn review-btn-danger">
+
+                    Yes, Delete Review
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

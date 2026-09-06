@@ -1,0 +1,248 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ booking.booking_reference }} | RESORT
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/client-dashboard.css' %}"
+    >
+
+</head>
+
+<body>
+
+<main class="client-main">
+
+    <div class="dashboard-content">
+
+        <div class="page-back">
+            <a href="{% url 'client_bookings' %}">
+                ← Back to bookings
+            </a>
+        </div>
+
+
+        <section class="page-header">
+
+            <span class="section-eyebrow">
+                BOOKING DETAILS
+            </span>
+
+            <h1>
+                {{ booking.booking_reference }}
+            </h1>
+
+            <p>
+                Your reservation at {{ booking.property.name }}
+            </p>
+
+        </section>
+
+
+        <div class="booking-detail-card">
+
+
+            <div class="booking-detail-image">
+
+                {% with image=booking.property.images.all|first %}
+
+                    {% if image %}
+
+                        <img
+                            src="{{ image.image.url }}"
+                            alt="{{ booking.property.name }}"
+                        >
+
+                    {% else %}
+
+                        <div class="image-placeholder">
+                            🏝
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+            </div>
+
+
+            <div class="booking-detail-content">
+
+                <div class="booking-detail-title">
+
+                    <div>
+
+                        <span class="booking-property-type">
+                            {{ booking.property.get_property_type_display }}
+                        </span>
+
+                        <h2>
+                            {{ booking.property.name }}
+                        </h2>
+
+                        <p>
+                            {{ booking.room.name }}
+                        </p>
+
+                    </div>
+
+
+                    <span
+                        class="status-pill status-{{ booking.status }}"
+                    >
+                        {{ booking.get_status_display }}
+                    </span>
+
+                </div>
+
+
+                <div class="detail-grid">
+
+                    <div>
+                        <span>Check in</span>
+                        <strong>
+                            {{ booking.check_in|date:"d M Y" }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Check out</span>
+                        <strong>
+                            {{ booking.check_out|date:"d M Y" }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Guests</span>
+                        <strong>
+                            {{ booking.guests }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Rooms</span>
+                        <strong>
+                            {{ booking.rooms_booked }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Nights</span>
+                        <strong>
+                            {{ booking.nights }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Price / night</span>
+                        <strong>
+                            ${{ booking.price_per_night|floatformat:2 }}
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="payment-summary">
+
+                    <div>
+                        <span>Total amount</span>
+
+                        <strong>
+                            ${{ booking.total_amount|floatformat:2 }}
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>Amount paid</span>
+
+                        <strong>
+                            ${{ booking.amount_paid|floatformat:2 }}
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        <span>Balance</span>
+
+                        <strong>
+                            ${{ booking.balance|floatformat:2 }}
+                        </strong>
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Payment status
+                        </span>
+
+                        <strong
+                            class="payment-status payment-{{ booking.payment_status }}"
+                        >
+                            {{ booking.get_payment_status_display }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                {% if booking.special_requests %}
+
+                    <div class="booking-notes">
+
+                        <h3>
+                            Special requests
+                        </h3>
+
+                        <p>
+                            {{ booking.special_requests }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if booking.cancellation_reason %}
+
+                    <div class="booking-notes">
+
+                        <h3>
+                            Cancellation reason
+                        </h3>
+
+                        <p>
+                            {{ booking.cancellation_reason }}
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

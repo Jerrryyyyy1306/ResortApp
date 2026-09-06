@@ -1,0 +1,74 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Delete User | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Delete User
+    </h1>
+
+
+    <p>
+        Are you sure you want to permanently delete
+        <strong>{{ managed_user.username }}</strong>?
+    </p>
+
+
+    <p style="color:#dc2626;">
+
+        This action cannot be undone.
+
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <button
+            type="submit"
+            style="
+                background:#dc2626;
+                color:white;
+                border:none;
+                padding:12px 18px;
+                border-radius:7px;
+                cursor:pointer;
+                font-weight:bold;
+            "
+        >
+            Yes, Delete User
+        </button>
+
+
+        <a
+            href="{% url 'user_detail' managed_user.id %}"
+            style="
+                display:inline-block;
+                background:#e5e7eb;
+                color:#111;
+                padding:12px 18px;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

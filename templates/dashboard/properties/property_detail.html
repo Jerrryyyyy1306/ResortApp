@@ -1,0 +1,796 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ property_obj.name }} | Properties
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info {
+        background: #f9fafb;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .info label {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .yellow {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .gray {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .primary {
+        background: #111827;
+        color: white;
+    }
+
+    .success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .rooms {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .rooms th,
+    .rooms td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    .images {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .images img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+</style>
+
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            {{ property_obj.name }}
+        </h1>
+
+        <p>
+            {{ property_obj.get_property_type_display }}
+        </p>
+
+    </div>
+
+
+    <div>
+
+        {% if property_obj.status == 'approved' %}
+
+            <span class="badge green">
+                Approved
+            </span>
+
+        {% elif property_obj.status == 'pending' %}
+
+            <span class="badge yellow">
+                Pending
+            </span>
+
+        {% elif property_obj.status == 'rejected' %}
+
+            <span class="badge red">
+                Rejected
+            </span>
+
+        {% elif property_obj.status == 'suspended' %}
+
+            <span class="badge red">
+                Suspended
+            </span>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <div
+            class="card"
+            style="background:#ecfdf5;color:#166534;"
+        >
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+{% endif %}
+
+
+<div class="card">
+
+    <h2>
+        Property Information
+    </h2>
+
+
+    <div class="grid">
+
+        <div class="info">
+
+            <label>
+                Owner
+            </label>
+
+            {{ property_obj.owner.get_full_name|default:property_obj.owner.username }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Location
+            </label>
+
+            {{ property_obj.city }},
+            {{ property_obj.province }},
+            {{ property_obj.country }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Address
+            </label>
+
+            {{ property_obj.address }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Phone
+            </label>
+
+            {{ property_obj.phone }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Email
+            </label>
+
+            {{ property_obj.email|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Website
+            </label>
+
+            {{ property_obj.website|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Check In
+            </label>
+
+            {{ property_obj.check_in_time|default:"Not specified" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Check Out
+            </label>
+
+            {{ property_obj.check_out_time|default:"Not specified" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Average Rating
+            </label>
+
+            {{ property_obj.average_rating }}
+            / 5
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Reviews
+            </label>
+
+            {{ property_obj.total_reviews }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Verification
+            </label>
+
+            {% if property_obj.is_verified %}
+
+                <span class="badge blue">
+                    Verified
+                </span>
+
+            {% else %}
+
+                <span class="badge gray">
+                    Not Verified
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Featured
+            </label>
+
+            {% if property_obj.is_featured %}
+
+                <span class="badge blue">
+                    Featured
+                </span>
+
+            {% else %}
+
+                No
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <h3>
+        Description
+    </h3>
+
+    <p>
+        {{ property_obj.description|linebreaks }}
+    </p>
+
+
+    <h3>
+        Amenities
+    </h3>
+
+    {% for amenity in property_obj.amenities.all %}
+
+        <span class="badge gray">
+            {{ amenity.name }}
+        </span>
+
+    {% empty %}
+
+        <p>
+            No amenities added.
+        </p>
+
+    {% endfor %}
+
+
+    <div class="buttons">
+
+        {% if request.user.profile.role == 'admin' %}
+
+            <a
+                href="{% url 'property_edit' property_obj.id %}"
+                class="btn primary"
+            >
+                Edit Property
+            </a>
+
+
+            {% if property_obj.status == 'pending' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'property_approve' property_obj.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn success"
+                    >
+                        Approve
+                    </button>
+
+                </form>
+
+
+                <form
+                    method="POST"
+                    action="{% url 'property_reject' property_obj.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="reason"
+                        value="Property did not meet marketplace requirements."
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn danger"
+                    >
+                        Reject
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            {% if property_obj.status == 'approved' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'property_suspend' property_obj.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="reason"
+                        value="Property suspended by administrator."
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn danger"
+                    >
+                        Suspend
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            {% if property_obj.status == 'suspended' %}
+
+                <form
+                    method="POST"
+                    action="{% url 'property_activate' property_obj.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn success"
+                    >
+                        Activate
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            <form
+                method="POST"
+                action="{% url 'property_toggle_verified' property_obj.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn secondary"
+                >
+
+                    {% if property_obj.is_verified %}
+                        Remove Verification
+                    {% else %}
+                        Verify Property
+                    {% endif %}
+
+                </button>
+
+            </form>
+
+
+            <form
+                method="POST"
+                action="{% url 'property_toggle_featured' property_obj.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn secondary"
+                >
+
+                    {% if property_obj.is_featured %}
+                        Remove Featured
+                    {% else %}
+                        Make Featured
+                    {% endif %}
+
+                </button>
+
+            </form>
+
+
+            <a
+                href="{% url 'property_delete' property_obj.id %}"
+                class="btn danger"
+            >
+                Delete
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+
+        <h2>
+            Rooms
+        </h2>
+
+
+        {% if request.user.profile.role == 'admin' %}
+
+            <a
+                href="{% url 'room_create' property_obj.id %}"
+                class="btn primary"
+            >
+                + Add Room
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <table class="rooms">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Room
+                </th>
+
+                <th>
+                    Guests
+                </th>
+
+                <th>
+                    Bed
+                </th>
+
+                <th>
+                    Price / Night
+                </th>
+
+                <th>
+                    Quantity
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Actions
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for room in property_obj.rooms.all %}
+
+                <tr>
+
+                    <td>
+                        {{ room.name }}
+                    </td>
+
+                    <td>
+                        {{ room.max_guests }}
+                    </td>
+
+                    <td>
+                        {{ room.bed_type|default:"-" }}
+                    </td>
+
+                    <td>
+                        ${{ room.price_per_night }}
+                    </td>
+
+                    <td>
+                        {{ room.quantity }}
+                    </td>
+
+                    <td>
+
+                        {% if room.is_available %}
+
+                            <span class="badge green">
+                                Available
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge red">
+                                Unavailable
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if request.user.profile.role == 'admin' %}
+
+                            <a
+                                href="{% url 'room_edit' room.id %}"
+                                class="btn secondary"
+                            >
+                                Edit
+                            </a>
+
+                            <a
+                                href="{% url 'room_delete' room.id %}"
+                                class="btn danger"
+                            >
+                                Delete
+                            </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="7">
+                        No rooms have been added.
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="card">
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+
+        <h2>
+            Property Photos
+        </h2>
+
+
+        {% if request.user.profile.role == 'admin' %}
+
+            <a
+                href="{% url 'image_create' property_obj.id %}"
+                class="btn primary"
+            >
+                + Add Photo
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="images">
+
+        {% for image in property_obj.images.all %}
+
+            <div>
+
+                <img
+                    src="{{ image.image.url }}"
+                    alt="{{ image.caption }}"
+                >
+
+                <p>
+                    {{ image.caption }}
+                </p>
+
+
+                {% if request.user.profile.role == 'admin' %}
+
+                    <form
+                        method="POST"
+                        action="{% url 'image_delete' image.id %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn danger"
+                        >
+                            Delete
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        {% empty %}
+
+            <p>
+                No photos uploaded.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

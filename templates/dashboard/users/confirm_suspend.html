@@ -1,0 +1,87 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Suspend User | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Suspend User
+    </h1>
+
+    <p>
+        You are about to suspend:
+        <strong>{{ managed_user.username }}</strong>
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <div style="margin:20px 0;">
+
+            <label>
+                Suspension Reason
+            </label>
+
+            <textarea
+                name="reason"
+                rows="5"
+                style="
+                    width:100%;
+                    padding:12px;
+                    margin-top:8px;
+                    border:1px solid #ddd;
+                    border-radius:7px;
+                "
+                placeholder="Enter the reason for suspension..."
+            ></textarea>
+
+        </div>
+
+
+        <button
+            type="submit"
+            style="
+                background:#dc2626;
+                color:white;
+                border:none;
+                padding:12px 18px;
+                border-radius:7px;
+                cursor:pointer;
+            "
+        >
+            Confirm Suspension
+        </button>
+
+
+        <a
+            href="{% url 'user_detail' managed_user.id %}"
+            style="
+                display:inline-block;
+                background:#e5e7eb;
+                color:#111;
+                padding:12px 18px;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

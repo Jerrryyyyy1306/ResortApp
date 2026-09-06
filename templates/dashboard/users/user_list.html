@@ -1,0 +1,588 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Users | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 7px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background: #111827;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .btn-success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-title {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .filters {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto auto;
+        gap: 10px;
+    }
+
+    .filter-form input,
+    .filter-form select {
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+    }
+
+    th {
+        background: #f9fafb;
+        font-size: 13px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-gray {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .pagination {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #111;
+    }
+
+    .pagination .current {
+        background: #111827;
+        color: white;
+    }
+
+    @media (max-width: 900px) {
+
+        .stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>User Management</h1>
+
+        <p>
+            Manage clients, property owners, staff and administrators.
+        </p>
+
+    </div>
+
+
+    {% if request.user.profile.role == 'admin' %}
+
+        <a
+            href="{% url 'user_create' %}"
+            class="btn btn-primary"
+        >
+            + Add User
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="stats">
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Total Users
+        </div>
+
+        <div class="stat-number">
+            {{ total_users }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Clients
+        </div>
+
+        <div class="stat-number">
+            {{ total_clients }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Property Owners
+        </div>
+
+        <div class="stat-number">
+            {{ total_owners }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Suspended
+        </div>
+
+        <div class="stat-number">
+            {{ total_suspended }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="filters">
+
+    <form
+        method="GET"
+        class="filter-form"
+    >
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search username, name or email..."
+            value="{{ search }}"
+        >
+
+
+        <select name="role">
+
+            <option value="">
+                All Roles
+            </option>
+
+            <option
+                value="admin"
+                {% if selected_role == 'admin' %}selected{% endif %}
+            >
+                Administrators
+            </option>
+
+            <option
+                value="staff"
+                {% if selected_role == 'staff' %}selected{% endif %}
+            >
+                Staff
+            </option>
+
+            <option
+                value="owner"
+                {% if selected_role == 'owner' %}selected{% endif %}
+            >
+                Property Owners
+            </option>
+
+            <option
+                value="client"
+                {% if selected_role == 'client' %}selected{% endif %}
+            >
+                Clients
+            </option>
+
+        </select>
+
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == 'active' %}selected{% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="suspended"
+                {% if selected_status == 'suspended' %}selected{% endif %}
+            >
+                Suspended
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == 'inactive' %}selected{% endif %}
+            >
+                Inactive
+            </option>
+
+        </select>
+
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Search
+        </button>
+
+
+        <a
+            href="{% url 'user_list' %}"
+            class="btn btn-secondary"
+        >
+            Reset
+        </a>
+
+    </form>
+
+</div>
+
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>User</th>
+
+                <th>Email</th>
+
+                <th>Role</th>
+
+                <th>Status</th>
+
+                <th>Joined</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for managed_user in page_obj %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            {{ managed_user.get_full_name|default:managed_user.username }}
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            @{{ managed_user.username }}
+                        </small>
+
+                    </td>
+
+
+                    <td>
+                        {{ managed_user.email|default:"No email" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if managed_user.profile.role == 'admin' %}
+
+                            <span class="badge badge-blue">
+                                Administrator
+                            </span>
+
+                        {% elif managed_user.profile.role == 'staff' %}
+
+                            <span class="badge badge-gray">
+                                Staff
+                            </span>
+
+                        {% elif managed_user.profile.role == 'owner' %}
+
+                            <span class="badge badge-blue">
+                                Property Owner
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-gray">
+                                Client
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if managed_user.profile.is_suspended %}
+
+                            <span class="badge badge-red">
+                                Suspended
+                            </span>
+
+                        {% elif not managed_user.is_active %}
+
+                            <span class="badge badge-red">
+                                Inactive
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-green">
+                                Active
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ managed_user.date_joined|date:"d M Y" }}
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            <a
+                                href="{% url 'user_detail' managed_user.id %}"
+                                class="btn btn-secondary"
+                            >
+                                View
+                            </a>
+
+                            {% if request.user.profile.role == 'admin' %}
+
+                                <a
+                                    href="{% url 'user_edit' managed_user.id %}"
+                                    class="btn btn-primary"
+                                >
+                                    Edit
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        style="text-align:center; padding:40px;"
+                    >
+                        No users found.
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    {% if page_obj.paginator.num_pages > 1 %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    href="?page=1&search={{ search }}&role={{ selected_role }}&status={{ selected_status }}"
+                >
+                    First
+                </a>
+
+                <a
+                    href="?page={{ page_obj.previous_page_number }}&search={{ search }}&role={{ selected_role }}&status={{ selected_status }}"
+                >
+                    Previous
+                </a>
+
+            {% endif %}
+
+
+            <span class="current">
+
+                Page
+                {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a
+                    href="?page={{ page_obj.next_page_number }}&search={{ search }}&role={{ selected_role }}&status={{ selected_status }}"
+                >
+                    Next
+                </a>
+
+                <a
+                    href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&role={{ selected_role }}&status={{ selected_status }}"
+                >
+                    Last
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

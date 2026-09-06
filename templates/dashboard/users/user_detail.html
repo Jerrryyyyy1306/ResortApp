@@ -1,0 +1,356 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ managed_user.username }} | User
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .profile-card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 900px;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+        margin-bottom: 25px;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #111827;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .info {
+        padding: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .info label {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background: #111827;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .btn-success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .warning {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+</style>
+
+
+<div class="profile-card">
+
+
+    {% if managed_user.profile.is_suspended %}
+
+        <div class="warning">
+
+            <strong>
+                Account Suspended
+            </strong>
+
+            {% if managed_user.profile.suspension_reason %}
+
+                <br>
+
+                Reason:
+                {{ managed_user.profile.suspension_reason }}
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="profile-header">
+
+        <div style="display:flex; gap:15px; align-items:center;">
+
+            <div class="avatar">
+
+                {{ managed_user.username|first|upper }}
+
+            </div>
+
+
+            <div>
+
+                <h1 style="margin:0;">
+                    {{ managed_user.get_full_name|default:managed_user.username }}
+                </h1>
+
+                <p>
+                    @{{ managed_user.username }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info-grid">
+
+
+        <div class="info">
+
+            <label>
+                Username
+            </label>
+
+            {{ managed_user.username }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Email
+            </label>
+
+            {{ managed_user.email|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                First Name
+            </label>
+
+            {{ managed_user.first_name|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Last Name
+            </label>
+
+            {{ managed_user.last_name|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Phone
+            </label>
+
+            {{ managed_user.profile.phone|default:"Not provided" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Role
+            </label>
+
+            {{ managed_user.profile.get_role_display }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Account Status
+            </label>
+
+            {% if managed_user.profile.is_suspended %}
+
+                Suspended
+
+            {% elif managed_user.is_active %}
+
+                Active
+
+            {% else %}
+
+                Inactive
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Date Joined
+            </label>
+
+            {{ managed_user.date_joined|date:"d F Y H:i" }}
+
+        </div>
+
+
+        <div class="info">
+
+            <label>
+                Last Login
+            </label>
+
+            {{ managed_user.last_login|date:"d F Y H:i"|default:"Never" }}
+
+        </div>
+
+
+    </div>
+
+
+    <div class="actions">
+
+
+        <a
+            href="{% url 'user_list' %}"
+            class="btn btn-secondary"
+        >
+            Back
+        </a>
+
+
+        {% if request.user.profile.role == 'admin' %}
+
+            <a
+                href="{% url 'user_edit' managed_user.id %}"
+                class="btn btn-primary"
+            >
+                Edit User
+            </a>
+
+
+            <a
+                href="{% url 'user_change_password' managed_user.id %}"
+                class="btn btn-secondary"
+            >
+                Change Password
+            </a>
+
+
+            {% if managed_user != request.user %}
+
+                {% if managed_user.profile.is_suspended %}
+
+                    <form
+                        method="POST"
+                        action="{% url 'user_activate' managed_user.id %}"
+                        style="display:inline;"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                        >
+                            Activate
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'user_suspend' managed_user.id %}"
+                        class="btn btn-danger"
+                    >
+                        Suspend
+                    </a>
+
+                {% endif %}
+
+
+                {% if not managed_user.is_superuser %}
+
+                    <a
+                        href="{% url 'user_delete' managed_user.id %}"
+                        class="btn btn-danger"
+                    >
+                        Delete
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

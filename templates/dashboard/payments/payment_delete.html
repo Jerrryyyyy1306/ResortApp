@@ -1,0 +1,78 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="payment-page">
+
+
+    <div class="payment-delete-card">
+
+
+        <!-- ICON -->
+        <div class="payment-delete-icon">
+            ⚠
+        </div>
+
+
+        <h2>
+            Delete Payment?
+        </h2>
+
+
+        <p>
+            You are about to delete payment
+            <strong>{{ payment.payment_reference }}</strong>.
+        </p>
+
+
+        <p>
+            Amount:
+            <strong>
+                ${{ payment.amount|floatformat:2 }}
+            </strong>
+        </p>
+
+
+        <p>
+            This action cannot be undone.
+        </p>
+
+
+        <!-- ACTIONS -->
+        <div class="payment-delete-actions">
+
+
+            <a
+                href="{% url 'payment_detail' payment.pk %}"
+                class="payment-btn payment-btn-secondary">
+
+                Cancel
+
+            </a>
+
+
+            <form
+                method="POST"
+                style="display: inline;">
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="payment-btn payment-btn-danger">
+
+                    Yes, Delete
+
+                </button>
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

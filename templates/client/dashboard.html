@@ -1,0 +1,1955 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dashboard | RESORT
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/client-dashboard.css' %}"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     MOBILE OVERLAY
+========================================================= -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside
+    class="client-sidebar"
+    id="clientSidebar"
+>
+
+    <div class="sidebar-brand">
+
+        <a
+            href="{% url 'client_dashboard' %}"
+            class="brand"
+        >
+            RESORT
+        </a>
+
+        <button
+            class="sidebar-close"
+            id="sidebarClose"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <!-- USER -->
+    <div class="sidebar-user">
+
+        <div class="user-avatar">
+
+            {{ first_name|first|upper }}
+
+        </div>
+
+        <div class="sidebar-user-info">
+
+            <strong>
+                {{ first_name }}
+            </strong>
+
+            <span>
+                Guest
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="client-nav">
+
+        <div class="nav-label">
+            MENU
+        </div>
+
+        <a
+            href="{% url 'client_dashboard' %}"
+            class="nav-item active"
+        >
+
+            <span class="nav-icon">
+                ⌂
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="#explore"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◉
+            </span>
+
+            <span>
+                Explore Properties
+            </span>
+
+        </a>
+
+
+        <a
+            href="#bookings"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ▣
+            </span>
+
+            <span>
+                My Bookings
+            </span>
+
+            {% if active_bookings %}
+                <span class="nav-badge">
+                    {{ active_bookings }}
+                </span>
+            {% endif %}
+
+        </a>
+
+
+        <div class="nav-label nav-label-spaced">
+            ACCOUNT
+        </div>
+
+
+        <a
+            href="{% url 'client_profile' %}"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◎
+            </span>
+
+            <span>
+                My Profile
+            </span>
+
+        </a>
+
+
+        <a
+            href="{% url 'client_password_change' %}"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◈
+            </span>
+
+            <span>
+                Security
+            </span>
+
+        </a>
+
+        <div class="nav-label nav-label-spaced">
+            EXPLORE
+        </div>
+
+        <a
+            href="?property_type=resort#search-results"
+            class="nav-item"
+        >
+            <span class="nav-icon">♨</span>
+            <span>Resorts</span>
+        </a>
+
+        <a
+            href="?property_type=lodge#search-results"
+            class="nav-item"
+        >
+            <span class="nav-icon">⌂</span>
+            <span>Lodges</span>
+        </a>
+
+        <a
+            href="?property_type=guest_house#search-results"
+            class="nav-item"
+        >
+            <span class="nav-icon">◇</span>
+            <span>Guest Houses</span>
+        </a>
+
+     </nav>
+
+
+    <!-- SIDEBAR BOTTOM -->
+
+    <div class="sidebar-bottom">
+
+        <div class="help-card">
+
+            <div class="help-icon">
+                ?
+            </div>
+
+            <div>
+
+                <strong>
+                    Need help?
+                </strong>
+
+                <p>
+                    We're here for you.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{% url 'account_logout' %}"
+            class="logout-link"
+        >
+
+            <span>
+                ↪
+            </span>
+
+            Sign out
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="client-main">
+
+
+<!-- =========================================================
+     TOPBAR
+========================================================= -->
+
+<header class="client-topbar">
+
+    <button
+        type="button"
+        class="mobile-menu"
+        id="mobileMenu"
+    >
+        ☰
+    </button>
+
+
+    <div class="topbar-search">
+
+        <span>
+            ⌕
+        </span>
+
+        <form
+            method="GET"
+            action="{% url 'client_dashboard' %}"
+        >
+
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Search resorts, lodges, guest houses..."
+            >
+
+        </form>
+
+    </div>
+
+
+    <div class="topbar-actions">
+
+        <button
+            type="button"
+            class="notification-btn"
+            title="Notifications"
+        >
+
+            ♧
+
+            {% if pending_bookings %}
+                <span class="notification-dot"></span>
+            {% endif %}
+
+        </button>
+
+
+        <div class="topbar-profile">
+
+            <div class="topbar-avatar">
+                {{ first_name|first|upper }}
+            </div>
+
+            <div class="topbar-profile-info">
+
+                <strong>
+                    {{ first_name }}
+                </strong>
+
+                <span>
+                    Guest
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     CONTENT
+========================================================= -->
+
+<div class="dashboard-content">
+
+
+<!-- =========================================================
+     WELCOME
+========================================================= -->
+
+<section class="welcome-section">
+
+    <div>
+
+        <p class="welcome-label">
+            WELCOME BACK
+        </p>
+
+        <h1>
+            Hello, {{ first_name }}.
+        </h1>
+
+        <p class="welcome-text">
+            Ready to discover your next unforgettable getaway?
+        </p>
+
+    </div>
+
+
+    <div class="welcome-stat">
+
+        <span class="welcome-stat-number">
+            {{ total_bookings }}
+        </span>
+
+        <span class="welcome-stat-label">
+            Total Bookings
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SEARCH BOX
+========================================================= -->
+
+<section class="booking-search-card">
+
+    <div class="search-heading">
+
+        <div>
+
+            <span class="search-eyebrow">
+                FIND YOUR STAY
+            </span>
+
+            <h2>
+                Where do you want to go?
+            </h2>
+
+        </div>
+
+        <span class="search-decoration">
+            ✦
+        </span>
+
+    </div>
+
+
+    <form
+        method="GET"
+        action="{% url 'client_dashboard' %}"
+        class="booking-search-form"
+    >
+
+        <!-- LOCATION -->
+
+        <div class="search-field">
+
+            <label>
+                Destination
+            </label>
+
+            <div class="field-input">
+
+                <span>
+                    ◉
+                </span>
+
+                <input
+                    type="text"
+                    name="location"
+                    value="{{ location_query }}"
+                    placeholder="City or destination"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- CHECK IN -->
+
+        <div class="search-field">
+
+            <label>
+                Check in
+            </label>
+
+            <div class="field-input">
+
+                <span>
+                    ▣
+                </span>
+
+                <input
+                    type="date"
+                    name="check_in"
+                    value="{{ check_in }}"
+                    min="{{ today|date:'Y-m-d' }}"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- CHECK OUT -->
+
+        <div class="search-field">
+
+            <label>
+                Check out
+            </label>
+
+            <div class="field-input">
+
+                <span>
+                    ▣
+                </span>
+
+                <input
+                    type="date"
+                    name="check_out"
+                    value="{{ check_out }}"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- GUESTS -->
+
+        <div class="search-field">
+
+            <label>
+                Guests
+            </label>
+
+            <div class="field-input">
+
+                <span>
+                    ♙
+                </span>
+
+                <input
+                    type="number"
+                    name="guests"
+                    value="{{ guests }}"
+                    min="1"
+                    placeholder="2"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- TYPE -->
+
+        <div class="search-field type-field">
+
+            <label>
+                Property type
+            </label>
+
+            <div class="field-input">
+
+                <span>
+                    ◇
+                </span>
+
+                <select name="property_type">
+
+                    <option value="">
+                        All types
+                    </option>
+
+                    <option
+                        value="resort"
+                        {% if property_type == 'resort' %}selected{% endif %}
+                    >
+                        Resorts
+                    </option>
+
+                    <option
+                        value="lodge"
+                        {% if property_type == 'lodge' %}selected{% endif %}
+                    >
+                        Lodges
+                    </option>
+
+                    <option
+                        value="guest_house"
+                        {% if property_type == 'guest_house' %}selected{% endif %}
+                    >
+                        Guest Houses
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="search-button"
+        >
+
+            Search
+
+        </button>
+
+    </form>
+
+
+    {% if has_search %}
+
+        <div class="search-results-message">
+
+            <span>
+                Search results
+            </span>
+
+            <a href="{% url 'client_dashboard' %}">
+                Clear filters
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     SEARCH RESULTS
+========================================================= -->
+
+{% if has_search %}
+
+<section
+    class="dashboard-section"
+    id="search-results"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                SEARCH
+            </span>
+
+            <h2>
+                Properties matching your search
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    {% if search_results %}
+
+        <div class="property-grid">
+
+            {% for property in search_results %}
+
+            <article class="property-card">
+
+                <a
+                    href="{% url 'client_property_detail' property.id %}"
+                    class="property-image"
+                >
+
+                    {% with primary_image=property.images.all|first %}
+
+                        {% if primary_image %}
+
+                            <img
+                                src="{{ primary_image.image.url }}"
+                                alt="{{ property.name }}"
+                            >
+
+                        {% else %}
+
+                            <div class="image-placeholder">
+
+                                <span>
+                                    🏝
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    {% if property.is_featured %}
+
+                        <span class="featured-badge">
+                            Featured
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if property.is_verified %}
+
+                        <span class="verified-badge">
+                            ✓ Verified
+                        </span>
+
+                    {% endif %}
+
+                </a>
+
+
+                <div class="property-card-body">
+
+                    <div class="property-type">
+
+                        {{ property.get_property_type_display }}
+
+                    </div>
+
+
+                    <h3>
+                        {{ property.name }}
+                    </h3>
+
+
+                    <p class="property-location">
+
+                        ◉
+
+                        {{ property.city }}
+
+                        {% if property.province %}
+                            , {{ property.province }}
+                        {% endif %}
+
+                    </p>
+
+
+                    <div class="property-rating">
+
+                        {% if property.average_rating > 0 %}
+
+                            <strong>
+                                ★ {{ property.average_rating|floatformat:1 }}
+                            </strong>
+
+                            <span>
+                                ({{ property.total_reviews }} reviews)
+                            </span>
+
+                        {% else %}
+
+                            <span>
+                                No reviews yet
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% with room=property.rooms.all|first %}
+
+                        {% if room %}
+
+                            <div class="property-price">
+
+                                <strong>
+                                    ${{ room.price_per_night|floatformat:2 }}
+                                </strong>
+
+                                <span>
+                                    / night
+                                </span>
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="property-price unavailable">
+
+                                Contact property for pricing
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-search">
+
+            <div class="empty-icon">
+                ⌕
+            </div>
+
+            <h3>
+                No properties found
+            </h3>
+
+            <p>
+                Try a different destination, property type or number of guests.
+            </p>
+
+            <a
+                href="{% url 'client_dashboard' %}"
+                class="secondary-button"
+            >
+                Clear Search
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     STATISTICS
+========================================================= -->
+
+<section class="stats-grid">
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon bookings-icon">
+            ▣
+        </div>
+
+        <div>
+
+            <span>
+                Total Bookings
+            </span>
+
+            <strong>
+                {{ total_bookings }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon confirmed-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <span>
+                Confirmed
+            </span>
+
+            <strong>
+                {{ confirmed_bookings }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon pending-icon">
+            ◷
+        </div>
+
+        <div>
+
+            <span>
+                Pending
+            </span>
+
+            <strong>
+                {{ pending_bookings }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon completed-icon">
+            ★
+        </div>
+
+        <div>
+
+            <span>
+                Completed
+            </span>
+
+            <strong>
+                {{ completed_bookings }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     UPCOMING BOOKINGS
+========================================================= -->
+
+<section
+    class="dashboard-section"
+    id="bookings"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                YOUR TRIPS
+            </span>
+
+            <h2>
+                Upcoming bookings
+            </h2>
+
+        </div>
+
+        {% if upcoming_bookings %}
+
+            <a
+                href="{% url 'client_bookings' %}"
+                class="section-link"
+            >
+                View all →
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if upcoming_bookings %}
+
+        <div class="booking-list">
+
+            {% for booking in upcoming_bookings %}
+
+            <a
+                href="{% url 'client_booking_detail' booking.id %}"
+                class="booking-card booking-card-link"
+            >
+                <div class="booking-payment-summary">
+
+                    <div>
+                        <span>Total</span>
+                        <strong>
+                            ${{ booking.total_amount|floatformat:2 }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Paid</span>
+                        <strong>
+                            ${{ booking.amount_paid|floatformat:2 }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Balance</span>
+                        <strong>
+                            ${{ booking.balance|floatformat:2 }}
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="booking-image">
+
+                    {% with primary_image=booking.property.images.all|first %}
+
+                        {% if primary_image %}
+
+                            <img
+                                src="{{ primary_image.image.url }}"
+                                alt="{{ booking.property.name }}"
+                            >
+
+                        {% else %}
+
+                            <div class="image-placeholder small">
+                                🏝
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+
+                <div class="booking-main">
+
+                    <div class="booking-header">
+
+                        <div>
+
+                            <span class="booking-property-type">
+                                {{ booking.property.get_property_type_display }}
+                            </span>
+
+                            <h3>
+                                {{ booking.property.name }}
+                            </h3>
+
+                        </div>
+
+
+                        <span
+                            class="status-pill status-{{ booking.status }}"
+                        >
+                            {{ booking.get_status_display }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="booking-details">
+
+                        <div>
+
+                            <span class="detail-label">
+                                Check in
+                            </span>
+
+                            <strong>
+                                {{ booking.check_in|date:"d M Y" }}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Check out
+                            </span>
+
+                            <strong>
+                                {{ booking.check_out|date:"d M Y" }}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Guests
+                            </span>
+
+                            <strong>
+                                {{ booking.guests }}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="detail-label">
+                                Nights
+                            </span>
+
+                            <strong>
+                                {{ booking.nights }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-footer">
+
+                        <div>
+
+                            <span class="booking-reference">
+                                {{ booking.booking_reference }}
+                            </span>
+
+                            <span class="payment-status payment-{{ booking.payment_status }}">
+                                {{ booking.get_payment_status_display }}
+                            </span>
+
+                        </div>
+
+
+                        <strong class="booking-total">
+
+                            ${{ booking.total_amount|floatformat:2 }}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                ✈
+            </div>
+
+            <div>
+
+                <h3>
+                    No upcoming trips
+                </h3>
+
+                <p>
+                    Your next adventure is waiting. Explore our properties and find somewhere special to stay.
+                </p>
+
+                <a
+                    href="#explore"
+                    class="primary-button"
+                >
+                    Explore properties
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     FEATURED PROPERTIES
+========================================================= -->
+
+<section
+    class="dashboard-section"
+    id="explore"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                HANDPICKED FOR YOU
+            </span>
+
+            <h2>
+                Featured properties
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    {% if featured_properties %}
+
+        <div class="property-grid">
+
+            {% for property in featured_properties %}
+
+            <article class="property-card">
+
+                <a
+                    href="{% url 'client_property_detail' property.id %}"
+                    class="property-image"
+                >
+
+                    {% with primary_image=property.images.all|first %}
+
+                        {% if primary_image %}
+
+                            <img
+                                src="{{ primary_image.image.url }}"
+                                alt="{{ property.name }}"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="image-placeholder">
+
+                                <span>
+                                    🏝
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <span class="featured-badge">
+                        Featured
+                    </span>
+
+
+                    {% if property.is_verified %}
+
+                        <span class="verified-badge">
+                            ✓ Verified
+                        </span>
+
+                    {% endif %}
+
+                </a>
+
+
+                <div class="property-card-body">
+
+                    <div class="property-type">
+                        {{ property.get_property_type_display }}
+                    </div>
+
+                    <h3>
+                        {{ property.name }}
+                    </h3>
+
+                    <p class="property-location">
+
+                        ◉
+
+                        {{ property.city }}
+
+                        {% if property.province %}
+                            , {{ property.province }}
+                        {% endif %}
+
+                    </p>
+
+
+                    <div class="property-rating">
+
+                        {% if property.average_rating > 0 %}
+
+                            <strong>
+                                ★ {{ property.average_rating|floatformat:1 }}
+                            </strong>
+
+                            <span>
+                                {{ property.total_reviews }} reviews
+                            </span>
+
+                        {% else %}
+
+                            <span>
+                                New property
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% with room=property.rooms.all|first %}
+
+                        {% if room %}
+
+                            <div class="property-price">
+
+                                <strong>
+                                    ${{ room.price_per_night|floatformat:2 }}
+                                </strong>
+
+                                <span>
+                                    / night
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state compact">
+
+            <div class="empty-state-icon">
+                ★
+            </div>
+
+            <div>
+
+                <h3>
+                    Featured properties are coming soon
+                </h3>
+
+                <p>
+                    Approved properties will appear here once they are featured.
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     PROPERTY TYPES
+========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                EXPLORE BY TYPE
+            </span>
+
+            <h2>
+                Find your perfect stay
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="category-grid">
+
+
+       <a
+            href="?property_type=resort#search-results"
+            class="category-card resort-category"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <span class="category-icon">
+                    ♨
+                </span>
+
+                <h3>
+                    Resorts
+                </h3>
+
+                <p>
+                    {{ resort_count }} properties
+                </p>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="?property_type=lodge#search-results"
+            class="category-card lodge-category"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <span class="category-icon">
+                    ⌂
+                </span>
+
+                <h3>
+                    Lodges
+                </h3>
+
+                <p>
+                    {{ lodge_count }} properties
+                </p>
+
+            </div>
+
+        </a>
+
+
+        <a
+            href="?property_type=guest_house#search-results"
+            class="category-card guest-category"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <span class="category-icon">
+                    ◇
+                </span>
+
+                <h3>
+                    Guest Houses
+                </h3>
+
+                <p>
+                    {{ guest_house_count }} properties
+                </p>
+
+            </div>
+
+        </a>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TOP RATED
+========================================================= -->
+
+{% if top_rated_properties %}
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                GUEST FAVOURITES
+            </span>
+
+            <h2>
+                Top-rated stays
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="horizontal-property-grid">
+
+        {% for property in top_rated_properties %}
+
+        <article class="property-card horizontal-property-card">
+
+            <a
+                href="{% url 'client_property_detail' property.id %}"
+                class="property-image"
+            >
+
+                {% with primary_image=property.images.all|first %}
+
+                    {% if primary_image %}
+
+                        <img
+                            src="{{ primary_image.image.url }}"
+                            alt="{{ property.name }}"
+                            loading="lazy"
+                        >
+
+                    {% else %}
+
+                        <div class="image-placeholder">
+                            🏝
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+            </a>
+
+
+            <div class="property-card-body">
+
+                <div class="property-type">
+                    {{ property.get_property_type_display }}
+                </div>
+
+                <h3>
+                    {{ property.name }}
+                </h3>
+
+                <p class="property-location">
+                    ◉ {{ property.city }}
+                </p>
+
+                <div class="property-rating">
+
+                    <strong>
+                        ★ {{ property.average_rating|floatformat:1 }}
+                    </strong>
+
+                    <span>
+                        {{ property.total_reviews }} reviews
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     RECENT BOOKINGS
+========================================================= -->
+
+{% if recent_bookings %}
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-eyebrow">
+                BOOKING HISTORY
+            </span>
+
+            <h2>
+                Recent bookings
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="recent-bookings-table-wrapper">
+
+        <table class="recent-bookings-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Property
+                    </th>
+
+                    <th>
+                        Reference
+                    </th>
+
+                    <th>
+                        Dates
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Payment
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for booking in recent_bookings %}
+
+                <tr>
+
+                    <td>
+
+                        <div class="table-property">
+
+                            {% with primary_image=booking.property.images.all|first %}
+
+                                {% if primary_image %}
+
+                                    <img
+                                        src="{{ primary_image.image.url }}"
+                                        alt="{{ booking.property.name }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="table-image-placeholder">
+                                        🏝
+                                    </div>
+
+                                {% endif %}
+
+                            {% endwith %}
+
+
+                            <div>
+
+                                <strong>
+                                    {{ booking.property.name }}
+                                </strong>
+
+                                <span>
+                                    {{ booking.room.name }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="reference-code">
+                            {{ booking.booking_reference }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="table-date">
+
+                            {{ booking.check_in|date:"d M Y" }}
+
+                            <span>
+                                →
+                            </span>
+
+                            {{ booking.check_out|date:"d M Y" }}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ${{ booking.total_amount|floatformat:2 }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="status-pill status-{{ booking.status }}"
+                        >
+                            {{ booking.get_status_display }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="payment-status payment-{{ booking.payment_status }}">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     OWNER PROMOTION
+========================================================= -->
+
+<section class="owner-promotion">
+
+    <div class="owner-promotion-content">
+
+        <span class="promotion-label">
+            OWN A PROPERTY?
+        </span>
+
+        <h2>
+            Turn your property into a destination.
+        </h2>
+
+        <p>
+            List your resort, lodge or guest house and start welcoming guests through RESORT.
+        </p>
+
+        <a
+            href="{% url 'account_register' %}?account_type=owner"
+            class="promotion-button"
+        >
+            List your property →
+        </a>
+
+    </div>
+
+
+    <div class="promotion-decoration">
+
+        <span>
+            🏝
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="client-footer">
+
+    <div>
+
+        <strong>
+            RESORT
+        </strong>
+
+        <span>
+            Discover. Stay. Remember.
+        </span>
+
+    </div>
+
+
+    <div class="footer-links">
+
+        <a href="#">
+            Help
+        </a>
+
+        <a href="#">
+            Terms
+        </a>
+
+        <a href="#">
+            Privacy
+        </a>
+
+    </div>
+
+</footer>
+
+
+</div>
+
+
+</main>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+    const mobileMenu =
+        document.getElementById('mobileMenu');
+
+    const sidebar =
+        document.getElementById('clientSidebar');
+
+    const sidebarClose =
+        document.getElementById('sidebarClose');
+
+    const sidebarOverlay =
+        document.getElementById('sidebarOverlay');
+
+
+    function openSidebar() {
+
+        sidebar.classList.add('open');
+
+        sidebarOverlay.classList.add('show');
+
+        document.body.classList.add('sidebar-open');
+
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove('open');
+
+        sidebarOverlay.classList.remove('show');
+
+        document.body.classList.remove('sidebar-open');
+
+    }
+
+
+    if (mobileMenu) {
+
+        mobileMenu.addEventListener(
+            'click',
+            openSidebar
+        );
+
+    }
+
+
+    if (sidebarClose) {
+
+        sidebarClose.addEventListener(
+            'click',
+            closeSidebar
+        );
+
+    }
+
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.addEventListener(
+            'click',
+            closeSidebar
+        );
+
+    }
+
+
+    document
+        .querySelectorAll('.client-nav .nav-item')
+        .forEach(function(item) {
+
+            item.addEventListener(
+                'click',
+                function() {
+
+                    if (
+                        window.innerWidth <= 900
+                    ) {
+
+                        closeSidebar();
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    /*
+     * Prevent check-out date from being
+     * earlier than check-in.
+     */
+
+    const checkIn =
+        document.querySelector(
+            'input[name="check_in"]'
+        );
+
+    const checkOut =
+        document.querySelector(
+            'input[name="check_out"]'
+        );
+
+
+    if (checkIn && checkOut) {
+
+        checkIn.addEventListener(
+            'change',
+            function() {
+
+                checkOut.min = checkIn.value;
+
+                if (
+                    checkOut.value &&
+                    checkOut.value < checkIn.value
+                ) {
+
+                    checkOut.value = '';
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Add Property Photo | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Add Property Photo
+    </h1>
+
+    <p>
+        {{ property_obj.name }}
+    </p>
+
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        {% csrf_token %}
+
+
+        {{ form.as_p }}
+
+
+        <button
+            type="submit"
+            style="
+                padding:12px 18px;
+                background:#111827;
+                color:white;
+                border:none;
+                border-radius:7px;
+                cursor:pointer;
+            "
+        >
+            Upload Photo
+        </button>
+
+
+        <a
+            href="{% url 'property_detail' property_obj.id %}"
+            style="
+                padding:12px 18px;
+                background:#e5e7eb;
+                color:#111;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Booking Dashboard | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .header p {
+        color: #6b7280;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border-radius: 7px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .primary {
+        background: #111827;
+        color: white;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns:
+            repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .card-title {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .card-number {
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .financial {
+        display: grid;
+        grid-template-columns:
+            repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .table-box {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 14px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    th {
+        background: #f9fafb;
+    }
+
+    .badge {
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .checked {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .completed {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .cancelled,
+    .rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    @media(max-width: 1000px) {
+
+        .cards {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+    }
+
+    @media(max-width: 600px) {
+
+        .cards,
+        .financial {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            Booking Dashboard
+        </h1>
+
+        <p>
+            Monitor reservations, payments and guest activity.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'booking_list' %}"
+        class="btn primary"
+    >
+        View All Bookings
+    </a>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="card">
+
+        <div class="card-title">
+            Total Bookings
+        </div>
+
+        <div class="card-number">
+            {{ total_bookings }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Pending
+        </div>
+
+        <div class="card-number">
+            {{ pending_bookings }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Confirmed
+        </div>
+
+        <div class="card-number">
+            {{ confirmed_bookings }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Checked In
+        </div>
+
+        <div class="card-number">
+            {{ checked_in_bookings }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="card">
+
+        <div class="card-title">
+            Completed
+        </div>
+
+        <div class="card-number">
+            {{ completed_bookings }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Cancelled
+        </div>
+
+        <div class="card-number">
+            {{ cancelled_bookings }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Rejected
+        </div>
+
+        <div class="card-number">
+            {{ rejected_bookings }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="financial">
+
+    <div class="card">
+
+        <div class="card-title">
+            Booking Revenue
+        </div>
+
+        <div class="card-number">
+            {{ total_revenue }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Amount Paid
+        </div>
+
+        <div class="card-number">
+            {{ total_paid }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            Outstanding
+        </div>
+
+        <div class="card-number">
+            {{ outstanding }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="table-box">
+
+    <h2 style="padding:20px;">
+        Recent Bookings
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Reference
+                </th>
+
+                <th>
+                    Guest
+                </th>
+
+                <th>
+                    Property
+                </th>
+
+                <th>
+                    Check In
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for booking in recent_bookings %}
+
+            <tr>
+
+                <td>
+                    <strong>
+                        {{ booking.booking_reference }}
+                    </strong>
+                </td>
+
+                <td>
+                    {{ booking.client.get_full_name|default:booking.client.username }}
+                </td>
+
+                <td>
+                    {{ booking.property.name }}
+                </td>
+
+                <td>
+                    {{ booking.check_in }}
+                </td>
+
+                <td>
+
+                    <span class="badge {{ booking.status }}">
+                        {{ booking.get_status_display }}
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <a
+                        href="{% url 'booking_detail' booking.id %}"
+                    >
+                        View
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="6">
+                    No bookings found.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,471 @@
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account | Resort</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/client-auth.css' %}"
+    >
+
+</head>
+
+<body>
+
+<div class="auth-page">
+
+    <!-- ================================================== -->
+    <!-- LEFT SIDE -->
+    <!-- ================================================== -->
+
+    <div class="auth-visual">
+
+        <div class="visual-overlay"></div>
+
+        <div class="visual-content">
+
+            <div class="brand">
+                RESORT
+            </div>
+
+            <h1>
+                Find your perfect getaway.
+            </h1>
+
+            <p>
+                Create an account and discover beautiful
+                resorts, lodges and guest houses.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- RIGHT SIDE -->
+    <!-- ================================================== -->
+
+    <div class="auth-form-section">
+
+        <div class="auth-container">
+
+            <div class="mobile-brand">
+                RESORT
+            </div>
+
+            <div class="auth-heading">
+
+                <h2>
+                    Create your account
+                </h2>
+
+                <p>
+                    Join Resort and start exploring.
+                </p>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- MESSAGES -->
+            <!-- ========================================== -->
+
+            {% if messages %}
+
+                <div class="messages">
+
+                    {% for message in messages %}
+
+                        <div class="message {{ message.tags }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ========================================== -->
+            <!-- NON-FIELD ERRORS -->
+            <!-- ========================================== -->
+
+            {% if form.non_field_errors %}
+
+                <div class="form-errors">
+
+                    {% for error in form.non_field_errors %}
+
+                        <p>{{ error }}</p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ========================================== -->
+            <!-- REGISTRATION FORM -->
+            <!-- ========================================== -->
+
+            <form
+                method="POST"
+                class="auth-form"
+                novalidate
+            >
+
+                {% csrf_token %}
+
+
+                <!-- ====================================== -->
+                <!-- FIRST + LAST NAME -->
+                <!-- ====================================== -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="{{ form.first_name.id_for_label }}">
+                            First name
+                        </label>
+
+                        {{ form.first_name }}
+
+                        {% if form.first_name.errors %}
+
+                            <div class="field-error">
+
+                                {% for error in form.first_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="{{ form.last_name.id_for_label }}">
+                            Last name
+                        </label>
+
+                        {{ form.last_name }}
+
+                        {% if form.last_name.errors %}
+
+                            <div class="field-error">
+
+                                {% for error in form.last_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ====================================== -->
+                <!-- EMAIL -->
+                <!-- ====================================== -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.email.id_for_label }}">
+                        Email address
+                    </label>
+
+                    {{ form.email }}
+
+                    {% if form.email.errors %}
+
+                        <div class="field-error">
+
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ====================================== -->
+                <!-- ACCOUNT TYPE -->
+                <!-- ====================================== -->
+
+                <div class="form-group account-type-group">
+
+                    <label>
+                        {{ form.account_type.label }}
+                    </label>
+
+                    <p class="account-type-help">
+                        Choose how you want to use Resort.
+                    </p>
+
+
+                    <div class="account-type-cards">
+
+
+                        <!-- CLIENT -->
+                        <label class="account-type-card">
+
+                            <input
+                                type="radio"
+                                name="account_type"
+                                value="client"
+                                {% if form.account_type.value == 'client' %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <div class="account-type-content">
+
+                                <div class="account-icon">
+                                    🏖️
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Client
+                                    </strong>
+
+                                    <span>
+                                        Find and book resorts,
+                                        lodges and guest houses.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </label>
+
+
+                        <!-- PROPERTY OWNER -->
+                        <label class="account-type-card">
+
+                            <input
+                                type="radio"
+                                name="account_type"
+                                value="owner"
+                                {% if form.account_type.value == 'owner' %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <div class="account-type-content">
+
+                                <div class="account-icon">
+                                    🏡
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Property Owner
+                                    </strong>
+
+                                    <span>
+                                        List and manage your
+                                        resort or guest house.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </label>
+
+
+                    </div>
+
+
+                    {% if form.account_type.errors %}
+
+                        <div class="field-error">
+
+                            {% for error in form.account_type.errors %}
+                                {{ error }}
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ====================================== -->
+                <!-- PASSWORD -->
+                <!-- ====================================== -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.password.id_for_label }}">
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        {{ form.password }}
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('id_password', this)"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                    <small class="password-hint">
+                        Password must be at least 8 characters.
+                    </small>
+
+                    {% if form.password.errors %}
+
+                        <div class="field-error">
+
+                            {% for error in form.password.errors %}
+                                {{ error }}
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ====================================== -->
+                <!-- CONFIRM PASSWORD -->
+                <!-- ====================================== -->
+
+                <div class="form-group">
+
+                    <label for="{{ form.password_confirm.id_for_label }}">
+                        Confirm password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        {{ form.password_confirm }}
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('id_password_confirm', this)"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                    {% if form.password_confirm.errors %}
+
+                        <div class="field-error">
+
+                            {% for error in form.password_confirm.errors %}
+                                {{ error }}
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ====================================== -->
+                <!-- SUBMIT -->
+                <!-- ====================================== -->
+
+                <button
+                    type="submit"
+                    class="auth-submit"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- ========================================== -->
+            <!-- LOGIN LINK -->
+            <!-- ========================================== -->
+
+            <div class="auth-footer">
+
+                <p>
+                    Already have an account?
+
+                    <a href="{% url 'account_login' %}">
+                        Sign in
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- PASSWORD TOGGLE -->
+<!-- ====================================================== -->
+
+<script>
+
+function togglePassword(inputId, button) {
+
+    const input = document.getElementById(inputId);
+
+    if (input.type === "password") {
+
+        input.type = "text";
+        button.textContent = "Hide";
+
+    } else {
+
+        input.type = "password";
+        button.textContent = "Show";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+```

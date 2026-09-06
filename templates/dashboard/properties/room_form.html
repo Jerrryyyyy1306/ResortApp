@@ -1,0 +1,84 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ page_title }} | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:700px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        {{ page_title }}
+    </h1>
+
+    <p>
+        Property:
+        <strong>
+            {{ property_obj.name }}
+        </strong>
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+
+        {% for field in form %}
+
+            <div style="margin-bottom:20px;">
+
+                {{ field.label_tag }}
+
+                {{ field }}
+
+                {{ field.errors }}
+
+            </div>
+
+        {% endfor %}
+
+
+        <button
+            type="submit"
+            style="
+                padding:12px 18px;
+                background:#111827;
+                color:white;
+                border:none;
+                border-radius:7px;
+                cursor:pointer;
+            "
+        >
+            Save Room
+        </button>
+
+
+        <a
+            href="{% url 'property_detail' property_obj.id %}"
+            style="
+                display:inline-block;
+                padding:12px 18px;
+                background:#e5e7eb;
+                color:#111;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

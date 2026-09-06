@@ -1,0 +1,395 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="payment-page">
+
+
+    <!-- HEADER -->
+    <div class="payment-detail-header">
+
+        <div>
+
+            <div class="payment-detail-reference">
+                {{ payment.payment_reference }}
+            </div>
+
+            <div class="payment-detail-subtitle">
+                Payment transaction details
+            </div>
+
+        </div>
+
+
+        <div class="payment-detail-actions">
+
+            <a
+                href="{% url 'payment_list' %}"
+                class="payment-btn payment-btn-secondary">
+
+                ← Back
+
+            </a>
+
+
+            <a
+                href="{% url 'payment_edit' payment.pk %}"
+                class="payment-btn payment-btn-primary">
+
+                ✏ Edit
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+    <div class="payment-detail-grid">
+
+
+        <!-- PAYMENT INFORMATION -->
+        <div class="payment-card">
+
+            <div class="payment-card-header">
+
+                <h2>
+                    Payment Information
+                </h2>
+
+            </div>
+
+
+            <div class="payment-card-body">
+
+                <div class="payment-info-grid">
+
+
+                    <!-- REFERENCE -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Payment Reference
+                        </div>
+
+                        <div class="payment-info-value">
+                            {{ payment.payment_reference }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOOKING -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Booking
+                        </div>
+
+                        <div class="payment-info-value">
+                            {{ payment.booking.booking_reference }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- CLIENT -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Client
+                        </div>
+
+                        <div class="payment-info-value">
+
+                            {% if payment.client.get_full_name %}
+                                {{ payment.client.get_full_name }}
+                            {% else %}
+                                {{ payment.client.username }}
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Email
+                        </div>
+
+                        <div class="payment-info-value">
+                            {{ payment.client.email|default:"Not provided" }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Amount
+                        </div>
+
+                        <div class="payment-info-value">
+
+                            <span class="payment-amount">
+                                ${{ payment.amount|floatformat:2 }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- METHOD -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Payment Method
+                        </div>
+
+                        <div class="payment-info-value">
+
+                            <span class="payment-method">
+                                {{ payment.get_payment_method_display }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Status
+                        </div>
+
+                        <div class="payment-info-value">
+
+                            <span class="payment-status payment-status-{{ payment.status }}">
+                                {{ payment.get_status_display }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TRANSACTION ID -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Transaction ID
+                        </div>
+
+                        <div class="payment-info-value">
+                            {{ payment.transaction_id|default:"Not provided" }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- CREATED -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Created
+                        </div>
+
+                        <div class="payment-info-value">
+                            {{ payment.created_at|date:"d M Y, H:i" }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- PAID AT -->
+                    <div class="payment-info-item">
+
+                        <div class="payment-info-label">
+                            Paid At
+                        </div>
+
+                        <div class="payment-info-value">
+
+                            {% if payment.paid_at %}
+                                {{ payment.paid_at|date:"d M Y, H:i" }}
+                            {% else %}
+                                Not paid
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- NOTES -->
+                {% if payment.notes %}
+
+                    <div style="margin-top: 25px;">
+
+                        <div class="payment-info-label">
+                            Notes
+                        </div>
+
+                        <div class="payment-info-value"
+                             style="margin-top: 8px; line-height: 1.6;">
+
+                            {{ payment.notes|linebreaks }}
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+        <div>
+
+
+            <!-- AMOUNT SUMMARY -->
+            <div class="payment-card">
+
+                <div class="payment-card-header">
+
+                    <h2>
+                        Payment Summary
+                    </h2>
+
+                </div>
+
+
+                <div class="payment-card-body">
+
+                    <div class="payment-amount-summary">
+
+                        <div class="payment-amount-row">
+
+                            <span>
+                                Payment Amount
+                            </span>
+
+                            <strong>
+                                ${{ payment.amount|floatformat:2 }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="payment-amount-row">
+
+                            <span>
+                                Status
+                            </span>
+
+                            <span class="payment-status payment-status-{{ payment.status }}">
+                                {{ payment.get_status_display }}
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="payment-card">
+
+                <div class="payment-card-header">
+
+                    <h2>
+                        Actions
+                    </h2>
+
+                </div>
+
+
+                <div class="payment-card-body">
+
+
+                    {% if payment.status != 'successful' %}
+
+                        <form
+                            method="POST"
+                            action="{% url 'mark_payment_successful' payment.pk %}"
+                            style="margin-bottom: 10px;">
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="payment-btn payment-btn-success"
+                                style="width: 100%;">
+
+                                ✓ Mark Successful
+
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+
+                    {% if payment.status != 'failed' %}
+
+                        <form
+                            method="POST"
+                            action="{% url 'mark_payment_failed' payment.pk %}"
+                            style="margin-bottom: 10px;">
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="payment-btn payment-btn-danger"
+                                style="width: 100%;">
+
+                                ✕ Mark Failed
+
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{% url 'payment_delete' payment.pk %}"
+                        class="payment-btn payment-btn-secondary"
+                        style="width: 100%; box-sizing: border-box;">
+
+                        🗑 Delete Payment
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

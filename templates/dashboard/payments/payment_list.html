@@ -1,0 +1,308 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="payment-page">
+
+    <!-- HEADER -->
+    <div class="payment-page-header">
+
+        <div>
+            <h1>All Payments</h1>
+            <p>Search, filter and manage payment transactions.</p>
+        </div>
+
+        <a href="{% url 'payment_create' %}"
+           class="payment-btn payment-btn-primary">
+            + Record Payment
+        </a>
+
+    </div>
+
+
+    <!-- FILTERS -->
+    <div class="payment-filter-card">
+
+        <form method="GET" class="payment-filter-form">
+
+            <!-- SEARCH -->
+            <div class="payment-form-group">
+
+                <label for="payment-search">
+                    Search
+                </label>
+
+                <input
+                    id="payment-search"
+                    type="text"
+                    name="search"
+                    value="{{ search }}"
+                    class="payment-input"
+                    placeholder="Reference, transaction, client..."
+                >
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="payment-form-group">
+
+                <label for="payment-status">
+                    Status
+                </label>
+
+                <select
+                    id="payment-status"
+                    name="status"
+                    class="payment-select">
+
+                    <option value="">
+                        All statuses
+                    </option>
+
+                    {% for value, label in status_choices %}
+
+                        <option value="{{ value }}"
+                            {% if selected_status == value %}
+                                selected
+                            {% endif %}>
+                            {{ label }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- METHOD -->
+            <div class="payment-form-group">
+
+                <label for="payment-method">
+                    Payment Method
+                </label>
+
+                <select
+                    id="payment-method"
+                    name="method"
+                    class="payment-select">
+
+                    <option value="">
+                        All methods
+                    </option>
+
+                    {% for value, label in method_choices %}
+
+                        <option value="{{ value }}"
+                            {% if selected_method == value %}
+                                selected
+                            {% endif %}>
+                            {{ label }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- BUTTON -->
+            <button
+                type="submit"
+                class="payment-btn payment-btn-primary">
+
+                Filter
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="payment-card">
+
+        <div class="payment-card-header">
+
+            <h2>Payment Transactions</h2>
+
+            <span>
+                {{ payments|length }} payment{{ payments|length|pluralize }}
+            </span>
+
+        </div>
+
+
+        <div class="payment-table-wrapper">
+
+            <table class="payment-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Reference</th>
+                        <th>Booking</th>
+                        <th>Client</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for payment in payments %}
+
+                    <tr>
+
+                        <!-- REFERENCE -->
+                        <td>
+
+                            <span class="payment-reference">
+                                {{ payment.payment_reference }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- BOOKING -->
+                        <td>
+                            {{ payment.booking.booking_reference }}
+                        </td>
+
+
+                        <!-- CLIENT -->
+                        <td>
+
+                            {% if payment.client.get_full_name %}
+                                {{ payment.client.get_full_name }}
+                            {% else %}
+                                {{ payment.client.username }}
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- AMOUNT -->
+                        <td>
+
+                            <span class="payment-amount">
+                                ${{ payment.amount|floatformat:2 }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- METHOD -->
+                        <td>
+
+                            <span class="payment-method">
+                                {{ payment.get_payment_method_display }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+                        <td>
+
+                            <span class="payment-status payment-status-{{ payment.status }}">
+                                {{ payment.get_status_display }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- DATE -->
+                        <td>
+                            {{ payment.created_at|date:"d M Y" }}
+                        </td>
+
+
+                        <!-- ACTIONS -->
+                        <td>
+
+                            <div class="payment-action-buttons">
+
+                                <a
+                                    href="{% url 'payment_detail' payment.pk %}"
+                                    class="payment-action-icon view"
+                                    title="View Payment">
+
+                                    👁
+
+                                </a>
+
+
+                                <a
+                                    href="{% url 'payment_edit' payment.pk %}"
+                                    class="payment-action-icon edit"
+                                    title="Edit Payment">
+
+                                    ✏
+
+                                </a>
+
+
+                                <a
+                                    href="{% url 'payment_delete' payment.pk %}"
+                                    class="payment-action-icon delete"
+                                    title="Delete Payment">
+
+                                    🗑
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="8">
+
+                            <div class="payment-empty">
+
+                                <div class="payment-empty-icon">
+                                    💳
+                                </div>
+
+                                <h3>No payments found</h3>
+
+                                <p>
+                                    Try changing your search or filter.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

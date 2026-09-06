@@ -1,0 +1,247 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="payment-page">
+
+    <div class="payment-page-header">
+
+        <div>
+
+            <h1>
+                {% if payment %}
+                    Edit Payment
+                {% else %}
+                    Record Payment
+                {% endif %}
+            </h1>
+
+            <p>
+                {% if payment %}
+                    Update the payment transaction details.
+                {% else %}
+                    Record a new payment for a booking.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM CARD -->
+    <div class="payment-card payment-form-card">
+
+        <div class="payment-card-header">
+
+            <h2>
+                Payment Information
+            </h2>
+
+        </div>
+
+
+        <div class="payment-card-body">
+
+            {% if form.non_field_errors %}
+
+                <div class="payment-alert payment-alert-error">
+
+                    {{ form.non_field_errors }}
+
+                </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <div class="payment-form-grid">
+
+
+                    <!-- BOOKING -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.booking.id_for_label }}">
+                            Booking
+                        </label>
+
+                        {{ form.booking }}
+
+                        {% if form.booking.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.booking.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- CLIENT -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.client.id_for_label }}">
+                            Client
+                        </label>
+
+                        {{ form.client }}
+
+                        {% if form.client.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.client.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.amount.id_for_label }}">
+                            Amount
+                        </label>
+
+                        {{ form.amount }}
+
+                        {% if form.amount.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.amount.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- PAYMENT METHOD -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.payment_method.id_for_label }}">
+                            Payment Method
+                        </label>
+
+                        {{ form.payment_method }}
+
+                        {% if form.payment_method.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.payment_method.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.status.id_for_label }}">
+                            Status
+                        </label>
+
+                        {{ form.status }}
+
+                        {% if form.status.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.status.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- TRANSACTION ID -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.transaction_id.id_for_label }}">
+                            Transaction ID
+                        </label>
+
+                        {{ form.transaction_id }}
+
+                        {% if form.transaction_id.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.transaction_id.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- PAID AT -->
+                    <div class="payment-form-group">
+
+                        <label for="{{ form.paid_at.id_for_label }}">
+                            Paid At
+                        </label>
+
+                        {{ form.paid_at }}
+
+                        {% if form.paid_at.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.paid_at.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- NOTES -->
+                    <div class="payment-form-group full-width">
+
+                        <label for="{{ form.notes.id_for_label }}">
+                            Notes
+                        </label>
+
+                        {{ form.notes }}
+
+                        {% if form.notes.errors %}
+                            <div class="payment-alert payment-alert-error">
+                                {{ form.notes.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ACTIONS -->
+                <div class="payment-form-actions">
+
+                    <a
+                        href="{% if payment %}{% url 'payment_detail' payment.pk %}{% else %}{% url 'payment_list' %}{% endif %}"
+                        class="payment-btn payment-btn-secondary">
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="payment-btn payment-btn-primary">
+
+                        {% if payment %}
+                            Save Changes
+                        {% else %}
+                            Record Payment
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block title %}
+Dashboard | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Dashboard</h1>
+
+<p>
+    Welcome back,
+    {{ request.user.first_name|default:request.user.username }}.
+</p>
+
+
+<div style="
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+">
+
+
+    <div style="
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+    ">
+
+        <p>Total Users</p>
+
+        <h2>
+            {{ total_users }}
+        </h2>
+
+    </div>
+
+
+    <div style="
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+    ">
+
+        <p>Total Properties</p>
+
+        <h2>
+            {{ total_properties }}
+        </h2>
+
+    </div>
+
+
+    <div style="
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+    ">
+
+        <p>Total Bookings</p>
+
+        <h2>
+            {{ total_bookings }}
+        </h2>
+
+    </div>
+
+
+    <div style="
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+    ">
+
+        <p>Total Revenue</p>
+
+        <h2>
+            ${{ total_revenue }}
+        </h2>
+
+    </div>
+
+
+</div>
+
+
+<div style="
+    background: white;
+    padding: 30px;
+    margin-top: 30px;
+    border-radius: 10px;
+">
+
+    <h2>
+        Recent Activity
+    </h2>
+
+    <p>
+        No activity available yet.
+    </p>
+
+</div>
+
+{% endblock %}

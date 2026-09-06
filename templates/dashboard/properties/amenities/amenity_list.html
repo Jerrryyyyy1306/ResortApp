@@ -1,0 +1,529 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Amenities Management | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin-bottom: 5px;
+    }
+
+    .page-header p {
+        color: #6b7280;
+    }
+
+
+    /* STATISTICS */
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-title {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 7px;
+    }
+
+
+    /* BUTTONS */
+
+    .btn {
+        display: inline-block;
+        padding: 9px 14px;
+        border-radius: 7px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .primary {
+        background: #111827;
+        color: white;
+    }
+
+    .secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .danger {
+        background: #dc2626;
+        color: white;
+    }
+
+    .success {
+        background: #16a34a;
+        color: white;
+    }
+
+
+    /* FILTER */
+
+    .filters {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 2fr 1fr auto auto;
+        gap: 10px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        box-sizing: border-box;
+    }
+
+
+    /* TABLE */
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    th {
+        background: #f9fafb;
+        font-size: 13px;
+        color: #4b5563;
+    }
+
+
+    /* BADGES */
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .gray {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+
+    .actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+
+    .empty {
+        text-align: center;
+        padding: 50px;
+        color: #6b7280;
+    }
+
+
+    @media(max-width: 800px) {
+
+        .stats {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+
+<!-- HEADER -->
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Amenities Management
+        </h1>
+
+        <p>
+            Manage the amenities available across your properties.
+        </p>
+
+    </div>
+
+
+    {% if request.user.profile.role == 'admin' %}
+
+        <a
+            href="{% url 'amenity_create' %}"
+            class="btn primary"
+        >
+            + Add Amenity
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<!-- STATISTICS -->
+
+<div class="stats">
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Total Amenities
+        </div>
+
+        <div class="stat-number">
+            {{ total_amenities }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Active Amenities
+        </div>
+
+        <div class="stat-number">
+            {{ active_amenities }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Inactive Amenities
+        </div>
+
+        <div class="stat-number">
+            {{ inactive_amenities }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FILTERS -->
+
+<div class="filters">
+
+    <form
+        method="GET"
+        class="filter-form"
+    >
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search amenities..."
+            value="{{ search }}"
+        >
+
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option
+                value="active"
+                {% if selected_status == 'active' %}
+                    selected
+                {% endif %}
+            >
+                Active
+            </option>
+
+            <option
+                value="inactive"
+                {% if selected_status == 'inactive' %}
+                    selected
+                {% endif %}
+            >
+                Inactive
+            </option>
+
+        </select>
+
+
+        <button
+            type="submit"
+            class="btn primary"
+        >
+            Search
+        </button>
+
+
+        <a
+            href="{% url 'amenity_list' %}"
+            class="btn secondary"
+        >
+            Reset
+        </a>
+
+    </form>
+
+</div>
+
+
+<!-- TABLE -->
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Amenity
+                </th>
+
+                <th>
+                    Icon
+                </th>
+
+                <th>
+                    Description
+                </th>
+
+                <th>
+                    Properties
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Actions
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for amenity in amenities %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            {{ amenity.name }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if amenity.icon %}
+
+                            <code>
+                                {{ amenity.icon }}
+                            </code>
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ amenity.description|default:"No description" }}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ amenity.property_count }}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if amenity.is_active %}
+
+                            <span class="badge green">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge red">
+                                Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            {% if request.user.profile.role == 'admin' %}
+
+                                <a
+                                    href="{% url 'amenity_edit' amenity.id %}"
+                                    class="btn secondary"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'amenity_toggle_status' amenity.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    {% if amenity.is_active %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn danger"
+                                        >
+                                            Disable
+                                        </button>
+
+                                    {% else %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn success"
+                                        >
+                                            Activate
+                                        </button>
+
+                                    {% endif %}
+
+                                </form>
+
+
+                                <a
+                                    href="{% url 'amenity_delete' amenity.id %}"
+                                    class="btn danger"
+                                >
+                                    Delete
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+
+                        <h3>
+                            No amenities found
+                        </h3>
+
+                        <p>
+                            Create your first amenity to get started.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

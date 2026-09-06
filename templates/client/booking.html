@@ -1,0 +1,231 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Bookings | RESORT</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/client-dashboard.css' %}"
+    >
+
+</head>
+
+<body>
+
+<main class="client-main bookings-page">
+
+    <div class="dashboard-content">
+
+        <div class="page-back">
+            <a href="{% url 'client_dashboard' %}">
+                ← Back to dashboard
+            </a>
+        </div>
+
+        <section class="page-header">
+
+            <span class="section-eyebrow">
+                YOUR TRIPS
+            </span>
+
+            <h1>
+                My Bookings
+            </h1>
+
+            <p>
+                View and manage all your RESORT bookings.
+            </p>
+
+        </section>
+
+
+        {% if bookings %}
+
+            <div class="booking-list">
+
+                {% for booking in bookings %}
+
+                    <a
+                        href="{% url 'client_booking_detail' booking.id %}"
+                        class="booking-card booking-card-link"
+                    >
+
+                        <div class="booking-image">
+
+                            {% with image=booking.property.images.all|first %}
+
+                                {% if image %}
+
+                                    <img
+                                        src="{{ image.image.url }}"
+                                        alt="{{ booking.property.name }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="image-placeholder small">
+                                        🏝
+                                    </div>
+
+                                {% endif %}
+
+                            {% endwith %}
+
+                        </div>
+
+
+                        <div class="booking-main">
+
+                            <div class="booking-header">
+
+                                <div>
+
+                                    <span class="booking-property-type">
+                                        {{ booking.property.get_property_type_display }}
+                                    </span>
+
+                                    <h3>
+                                        {{ booking.property.name }}
+                                    </h3>
+
+                                    <p>
+                                        {{ booking.room.name }}
+                                    </p>
+
+                                </div>
+
+                                <span
+                                    class="status-pill status-{{ booking.status }}"
+                                >
+                                    {{ booking.get_status_display }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="booking-details">
+
+                                <div>
+                                    <span class="detail-label">
+                                        Check in
+                                    </span>
+
+                                    <strong>
+                                        {{ booking.check_in|date:"d M Y" }}
+                                    </strong>
+                                </div>
+
+
+                                <div>
+                                    <span class="detail-label">
+                                        Check out
+                                    </span>
+
+                                    <strong>
+                                        {{ booking.check_out|date:"d M Y" }}
+                                    </strong>
+                                </div>
+
+
+                                <div>
+                                    <span class="detail-label">
+                                        Guests
+                                    </span>
+
+                                    <strong>
+                                        {{ booking.guests }}
+                                    </strong>
+                                </div>
+
+
+                                <div>
+                                    <span class="detail-label">
+                                        Nights
+                                    </span>
+
+                                    <strong>
+                                        {{ booking.nights }}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <div class="booking-footer">
+
+                                <div>
+
+                                    <span class="booking-reference">
+                                        {{ booking.booking_reference }}
+                                    </span>
+
+                                    <span
+                                        class="payment-status payment-{{ booking.payment_status }}"
+                                    >
+                                        {{ booking.get_payment_status_display }}
+                                    </span>
+
+                                </div>
+
+                                <strong class="booking-total">
+                                    ${{ booking.total_amount|floatformat:2 }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    ✈
+                </div>
+
+                <div>
+
+                    <h3>
+                        You haven't made any bookings yet.
+                    </h3>
+
+                    <p>
+                        Discover a beautiful resort, lodge or guest house
+                        and start planning your next trip.
+                    </p>
+
+                    <a
+                        href="{% url 'client_dashboard' %}#explore"
+                        class="primary-button"
+                    >
+                        Explore properties
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

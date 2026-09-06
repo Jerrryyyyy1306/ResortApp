@@ -1,0 +1,342 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block title %}Review Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="review-page">
+
+    <div class="review-detail-header">
+
+        <div>
+
+            <a href="{% url 'review_list' %}"
+               class="review-back">
+                ← Back to Reviews
+            </a>
+
+            <h1>{{ review.title }}</h1>
+
+            <div class="review-detail-rating">
+                {{ review.stars_display }}
+            </div>
+
+        </div>
+
+
+        <div class="review-detail-actions">
+
+            <a
+                href="{% url 'review_edit' review.pk %}"
+                class="review-btn review-btn-secondary">
+
+                Edit
+
+            </a>
+
+            <a
+                href="{% url 'review_delete' review.pk %}"
+                class="review-btn review-btn-danger">
+
+                Delete
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="review-detail-grid">
+
+
+        <!-- MAIN REVIEW -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+
+                <h2>Customer Review</h2>
+
+                {% if review.is_flagged %}
+
+                    <span class="review-flag flagged">
+                        ⚑ Flagged
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            <div class="review-card-body">
+
+                <div class="review-author">
+
+                    <div class="review-avatar">
+
+                        {{ review.client.first_name|first|default:review.client.username|first|upper }}
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ review.client.get_full_name|default:review.client.username }}
+                        </strong>
+
+                        <span>
+                            {{ review.created_at|date:"d F Y, H:i" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="review-large-stars">
+                    {{ review.stars_display }}
+                </div>
+
+
+                <h3>
+                    {{ review.title }}
+                </h3>
+
+
+                <div class="review-full-comment">
+
+                    {{ review.comment|linebreaks }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFORMATION -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+                <h2>Review Information</h2>
+            </div>
+
+            <div class="review-card-body">
+
+                <div class="review-info-grid">
+
+                    <div class="review-info-item">
+
+                        <span>Client</span>
+
+                        <strong>
+                            {{ review.client.get_full_name|default:review.client.username }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-info-item">
+
+                        <span>Property</span>
+
+                        <strong>
+                            {{ review.property }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-info-item">
+
+                        <span>Booking</span>
+
+                        <strong>
+
+                            {% if review.booking %}
+                                {{ review.booking.booking_reference }}
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-info-item">
+
+                        <span>Rating</span>
+
+                        <strong>
+                            {{ review.rating }}/5
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-info-item">
+
+                        <span>Status</span>
+
+                        <strong>
+
+                            <span class="review-status review-status-{{ review.status }}">
+                                {{ review.get_status_display }}
+                            </span>
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-info-item">
+
+                        <span>Submitted</span>
+
+                        <strong>
+                            {{ review.created_at|date:"d M Y" }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODERATION -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+                <h2>Moderation</h2>
+            </div>
+
+            <div class="review-card-body">
+
+                <div class="review-moderation-actions">
+
+
+                    {% if review.status != 'approved' %}
+
+                    <form method="POST"
+                          action="{% url 'approve_review' review.pk %}">
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="review-btn review-btn-success">
+
+                            ✓ Approve Review
+
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+
+                    {% if review.status != 'rejected' %}
+
+                    <form method="POST"
+                          action="{% url 'reject_review' review.pk %}">
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="review-btn review-btn-danger">
+
+                            ✕ Reject Review
+
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+
+                    <form method="POST"
+                          action="{% url 'toggle_flag_review' review.pk %}">
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="review-btn review-btn-warning">
+
+                            {% if review.is_flagged %}
+                                Remove Flag
+                            {% else %}
+                                ⚑ Flag Review
+                            {% endif %}
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                {% if review.moderated_at %}
+
+                    <div class="review-moderated">
+
+                        Moderated on
+                        {{ review.moderated_at|date:"d F Y, H:i" }}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- ADMIN RESPONSE -->
+
+        <div class="review-card">
+
+            <div class="review-card-header">
+                <h2>Admin Response</h2>
+            </div>
+
+            <div class="review-card-body">
+
+                {% if review.admin_response %}
+
+                    <div class="admin-response">
+
+                        {{ review.admin_response|linebreaks }}
+
+                    </div>
+
+                {% else %}
+
+                    <p class="review-muted">
+                        No administrative response has been added.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

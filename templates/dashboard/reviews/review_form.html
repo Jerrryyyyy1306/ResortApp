@@ -1,0 +1,186 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="review-page">
+
+    <div class="review-page-header">
+
+        <div>
+
+            <h1>{{ title }}</h1>
+
+            <p>
+                {% if review %}
+                    Update review information.
+                {% else %}
+                    Add a review manually.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="review-form-card">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="review-alert review-alert-error">
+
+                    {{ form.non_field_errors }}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="review-form-grid">
+
+
+                <div class="review-form-group">
+
+                    <label>Client</label>
+
+                    {{ form.client }}
+
+                    {{ form.client.errors }}
+
+                </div>
+
+
+                <div class="review-form-group">
+
+                    <label>Property</label>
+
+                    {{ form.property }}
+
+                    {{ form.property.errors }}
+
+                </div>
+
+
+                <div class="review-form-group">
+
+                    <label>Booking</label>
+
+                    {{ form.booking }}
+
+                    {{ form.booking.errors }}
+
+                </div>
+
+
+                <div class="review-form-group">
+
+                    <label>Rating</label>
+
+                    {{ form.rating }}
+
+                    {{ form.rating.errors }}
+
+                </div>
+
+
+                <div class="review-form-group full-width">
+
+                    <label>Review Title</label>
+
+                    {{ form.title }}
+
+                    {{ form.title.errors }}
+
+                </div>
+
+
+                <div class="review-form-group full-width">
+
+                    <label>Comment</label>
+
+                    {{ form.comment }}
+
+                    {{ form.comment.errors }}
+
+                </div>
+
+
+                <div class="review-form-group">
+
+                    <label>Status</label>
+
+                    {{ form.status }}
+
+                    {{ form.status.errors }}
+
+                </div>
+
+
+                <div class="review-form-group review-checkbox-group">
+
+                    {{ form.is_flagged }}
+
+                    <label for="{{ form.is_flagged.id_for_label }}">
+                        Flag this review
+                    </label>
+
+                </div>
+
+
+                <div class="review-form-group full-width">
+
+                    <label>Admin Response</label>
+
+                    {{ form.admin_response }}
+
+                    {{ form.admin_response.errors }}
+
+                </div>
+
+            </div>
+
+
+            <div class="review-form-actions">
+
+                <a
+                    href="{% url 'review_list' %}"
+                    class="review-btn review-btn-secondary">
+
+                    Cancel
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="review-btn review-btn-primary">
+
+                    {% if review %}
+                        Save Changes
+                    {% else %}
+                        Create Review
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ page_title }} | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<h1>
+    {{ page_title }}
+</h1>
+
+
+<div style="
+    background:white;
+    max-width:850px;
+    padding:30px;
+    border-radius:10px;
+">
+
+<form method="POST">
+
+    {% csrf_token %}
+
+
+    {{ form.non_field_errors }}
+
+
+    {% for field in form %}
+
+        <div style="
+            margin-bottom:20px;
+        ">
+
+            <label style="
+                display:block;
+                font-weight:600;
+                margin-bottom:7px;
+            ">
+
+                {{ field.label }}
+
+            </label>
+
+
+            {{ field }}
+
+
+            {% if field.errors %}
+
+                <div style="
+                    color:#dc2626;
+                    margin-top:5px;
+                ">
+
+                    {{ field.errors }}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+
+    <div style="
+        display:flex;
+        gap:10px;
+    ">
+
+        <button
+            type="submit"
+            style="
+                background:#111827;
+                color:white;
+                border:none;
+                padding:12px 20px;
+                border-radius:7px;
+                cursor:pointer;
+                font-weight:bold;
+            "
+        >
+
+            {{ button_text }}
+
+        </button>
+
+
+        <a
+            href="{% url 'booking_list' %}"
+            style="
+                background:#e5e7eb;
+                color:#111827;
+                padding:12px 20px;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+
+            Cancel
+
+        </a>
+
+    </div>
+
+</form>
+
+</div>
+
+{% endblock %}

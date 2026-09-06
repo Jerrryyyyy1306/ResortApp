@@ -1,0 +1,76 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Delete Property | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Delete Property
+    </h1>
+
+
+    <p>
+
+        Are you sure you want to permanently delete:
+
+        <strong>
+            {{ property_obj.name }}
+        </strong>
+
+    </p>
+
+
+    <p style="color:#dc2626;">
+        This action cannot be undone.
+    </p>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <button
+            type="submit"
+            style="
+                padding:12px 18px;
+                background:#dc2626;
+                color:white;
+                border:none;
+                border-radius:7px;
+                cursor:pointer;
+                font-weight:bold;
+            "
+        >
+            Delete Property
+        </button>
+
+
+        <a
+            href="{% url 'property_detail' property_obj.id %}"
+            style="
+                display:inline-block;
+                padding:12px 18px;
+                background:#e5e7eb;
+                color:#111;
+                border-radius:7px;
+                text-decoration:none;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

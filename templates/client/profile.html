@@ -1,0 +1,51 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Profile | Resort</title>
+
+</head>
+
+<body>
+
+    <h1>My Profile</h1>
+
+    <p>
+        Name:
+        {{ request.user.first_name }}
+        {{ request.user.last_name }}
+    </p>
+
+    <p>
+        Email:
+        {{ request.user.email }}
+    </p>
+
+    <p>
+        Username:
+        {{ request.user.username }}
+    </p>
+
+    <hr>
+
+    <a href="{% url 'client_dashboard' %}">
+        Back to Dashboard
+    </a>
+
+    <br><br>
+
+    <a href="{% url 'account_logout' %}">
+        Logout
+    </a>
+
+</body>
+</html>
+```

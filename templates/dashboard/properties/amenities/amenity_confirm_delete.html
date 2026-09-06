@@ -1,0 +1,101 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Delete Amenity | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<div style="
+    max-width:600px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+">
+
+    <h1>
+        Delete Amenity
+    </h1>
+
+
+    <p>
+
+        Are you sure you want to permanently delete:
+
+        <strong>
+            {{ amenity.name }}
+        </strong>
+
+        ?
+
+    </p>
+
+
+    {% if amenity.properties.exists %}
+
+        <div style="
+            background:#fee2e2;
+            color:#991b1b;
+            padding:15px;
+            border-radius:7px;
+            margin:20px 0;
+        ">
+
+            <strong>
+                Warning
+            </strong>
+
+            <br>
+
+            This amenity is currently being used by
+            one or more properties.
+
+            Consider disabling it instead of deleting it.
+
+        </div>
+
+    {% endif %}
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <button
+            type="submit"
+            style="
+                padding:12px 18px;
+                background:#dc2626;
+                color:white;
+                border:none;
+                border-radius:7px;
+                cursor:pointer;
+                font-weight:bold;
+            "
+        >
+            Delete Amenity
+        </button>
+
+
+        <a
+            href="{% url 'amenity_list' %}"
+            style="
+                display:inline-block;
+                padding:12px 18px;
+                background:#e5e7eb;
+                color:#111827;
+                border-radius:7px;
+                text-decoration:none;
+                margin-left:5px;
+            "
+        >
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

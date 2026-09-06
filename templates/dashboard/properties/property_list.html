@@ -1,0 +1,568 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Properties | Resort Marketplace
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .stat-title {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .stat-number {
+        font-size: 27px;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .filters {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 2fr repeat(4, 1fr) auto auto;
+        gap: 10px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    th {
+        background: #f9fafb;
+        font-size: 13px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .green {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .red {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .yellow {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .gray {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 9px 14px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+
+    .primary {
+        background: #111827;
+        color: white;
+    }
+
+    .secondary {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .pagination {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+</style>
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Property Management
+        </h1>
+
+        <p>
+            Manage resorts, lodges and guest houses.
+        </p>
+
+    </div>
+
+
+    {% if request.user.profile.role == 'admin' %}
+
+        <a
+            href="{% url 'property_create' %}"
+            class="btn primary"
+        >
+            + Add Property
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="stats">
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Total Properties
+        </div>
+
+        <div class="stat-number">
+            {{ total_properties }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Pending Approval
+        </div>
+
+        <div class="stat-number">
+            {{ pending_properties }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Approved
+        </div>
+
+        <div class="stat-number">
+            {{ approved_properties }}
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Featured
+        </div>
+
+        <div class="stat-number">
+            {{ featured_properties }}
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="filters">
+
+    <form
+        method="GET"
+        class="filter-form"
+    >
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search properties..."
+            value="{{ search }}"
+        >
+
+
+        <select name="property_type">
+
+            <option value="">
+                All Types
+            </option>
+
+            <option
+                value="resort"
+                {% if selected_type == 'resort' %}selected{% endif %}
+            >
+                Resorts
+            </option>
+
+            <option
+                value="lodge"
+                {% if selected_type == 'lodge' %}selected{% endif %}
+            >
+                Lodges
+            </option>
+
+            <option
+                value="guest_house"
+                {% if selected_type == 'guest_house' %}selected{% endif %}
+            >
+                Guest Houses
+            </option>
+
+        </select>
+
+
+        <select name="status">
+
+            <option value="">
+                All Status
+            </option>
+
+            <option value="pending">
+                Pending
+            </option>
+
+            <option value="approved">
+                Approved
+            </option>
+
+            <option value="rejected">
+                Rejected
+            </option>
+
+            <option value="suspended">
+                Suspended
+            </option>
+
+        </select>
+
+
+        <select name="featured">
+
+            <option value="">
+                Featured
+            </option>
+
+            <option value="yes">
+                Featured
+            </option>
+
+            <option value="no">
+                Not Featured
+            </option>
+
+        </select>
+
+
+        <select name="verified">
+
+            <option value="">
+                Verification
+            </option>
+
+            <option value="yes">
+                Verified
+            </option>
+
+            <option value="no">
+                Not Verified
+            </option>
+
+        </select>
+
+
+        <button
+            type="submit"
+            class="btn primary"
+        >
+            Filter
+        </button>
+
+
+        <a
+            href="{% url 'property_list' %}"
+            class="btn secondary"
+        >
+            Reset
+        </a>
+
+    </form>
+
+</div>
+
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Property
+                </th>
+
+                <th>
+                    Type
+                </th>
+
+                <th>
+                    Owner
+                </th>
+
+                <th>
+                    Location
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Verification
+                </th>
+
+                <th>
+                    Actions
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for property in page_obj %}
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            {{ property.name }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        {{ property.get_property_type_display }}
+                    </td>
+
+
+                    <td>
+                        {{ property.owner.username }}
+                    </td>
+
+
+                    <td>
+                        {{ property.city }}
+                        {% if property.province %}
+                            , {{ property.province }}
+                        {% endif %}
+                    </td>
+
+
+                    <td>
+
+                        {% if property.status == 'approved' %}
+
+                            <span class="badge green">
+                                Approved
+                            </span>
+
+                        {% elif property.status == 'pending' %}
+
+                            <span class="badge yellow">
+                                Pending
+                            </span>
+
+                        {% elif property.status == 'rejected' %}
+
+                            <span class="badge red">
+                                Rejected
+                            </span>
+
+                        {% elif property.status == 'suspended' %}
+
+                            <span class="badge red">
+                                Suspended
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge gray">
+                                {{ property.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if property.is_verified %}
+
+                            <span class="badge blue">
+                                Verified
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge gray">
+                                Unverified
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <a
+                            href="{% url 'property_detail' property.id %}"
+                            class="btn secondary"
+                        >
+                            View
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        style="text-align:center;padding:40px;"
+                    >
+                        No properties found.
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    {% if page_obj.paginator.num_pages > 1 %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+
+            {% endif %}
+
+
+            <span>
+
+                Page
+                {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+
+            </span>
+
+
+            {% if page_obj.has_next %}
+
+                <a href="?page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

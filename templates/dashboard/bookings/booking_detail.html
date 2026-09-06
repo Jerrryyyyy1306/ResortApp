@@ -1,0 +1,603 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+{{ booking.booking_reference }} | Booking
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    .header {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:25px;
+    }
+
+    .grid {
+        display:grid;
+        grid-template-columns:
+            2fr 1fr;
+        gap:20px;
+    }
+
+    .card {
+        background:white;
+        padding:25px;
+        border-radius:10px;
+        margin-bottom:20px;
+    }
+
+    .row {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        padding:12px 0;
+        border-bottom:1px solid #eee;
+    }
+
+    .label {
+        color:#6b7280;
+    }
+
+    .actions {
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+    }
+
+    .btn {
+        padding:10px 15px;
+        border-radius:7px;
+        text-decoration:none;
+        border:none;
+        cursor:pointer;
+        font-weight:600;
+    }
+
+    .primary {
+        background:#111827;
+        color:white;
+    }
+
+    .success {
+        background:#16a34a;
+        color:white;
+    }
+
+    .danger {
+        background:#dc2626;
+        color:white;
+    }
+
+    .warning {
+        background:#d97706;
+        color:white;
+    }
+
+    .secondary {
+        background:#e5e7eb;
+        color:#111827;
+    }
+
+    textarea,
+    input {
+        width:100%;
+        padding:10px;
+        box-sizing:border-box;
+        border:1px solid #d1d5db;
+        border-radius:7px;
+    }
+
+    @media(max-width:800px) {
+
+        .grid {
+            grid-template-columns:1fr;
+        }
+
+    }
+
+</style>
+
+
+<div class="header">
+
+    <div>
+
+        <h1>
+            {{ booking.booking_reference }}
+        </h1>
+
+        <p>
+            Created {{ booking.created_at|date:"d M Y H:i" }}
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'booking_list' %}"
+        class="btn secondary"
+    >
+        ← Back to Bookings
+    </a>
+
+</div>
+
+
+<div class="grid">
+
+<div>
+
+
+<!-- GUEST -->
+
+<div class="card">
+
+    <h2>
+        Guest Information
+    </h2>
+
+
+    <div class="row">
+
+        <span class="label">
+            Name
+        </span>
+
+        <strong>
+            {{ booking.client.get_full_name }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Username
+        </span>
+
+        <span>
+            {{ booking.client.username }}
+        </span>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Email
+        </span>
+
+        <span>
+            {{ booking.client.email }}
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- PROPERTY -->
+
+<div class="card">
+
+    <h2>
+        Property Information
+    </h2>
+
+
+    <div class="row">
+
+        <span class="label">
+            Property
+        </span>
+
+        <strong>
+            {{ booking.property.name }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Room
+        </span>
+
+        <span>
+            {{ booking.room }}
+        </span>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Guests
+        </span>
+
+        <span>
+            {{ booking.guests }}
+        </span>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Rooms Booked
+        </span>
+
+        <span>
+            {{ booking.rooms_booked }}
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- STAY -->
+
+<div class="card">
+
+    <h2>
+        Stay Information
+    </h2>
+
+
+    <div class="row">
+
+        <span class="label">
+            Check In
+        </span>
+
+        <strong>
+            {{ booking.check_in }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Check Out
+        </span>
+
+        <strong>
+            {{ booking.check_out }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Nights
+        </span>
+
+        <span>
+            {{ booking.nights }}
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- REQUESTS -->
+
+<div class="card">
+
+    <h2>
+        Guest Requests
+    </h2>
+
+    <p>
+
+        {{ booking.special_requests|default:"No special requests." }}
+
+    </p>
+
+</div>
+
+
+<!-- ADMIN NOTES -->
+
+<div class="card">
+
+    <h2>
+        Admin Notes
+    </h2>
+
+    <p>
+
+        {{ booking.admin_notes|default:"No admin notes." }}
+
+    </p>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT COLUMN -->
+
+<div>
+
+
+<!-- STATUS -->
+
+<div class="card">
+
+    <h2>
+        Booking Status
+    </h2>
+
+
+    <p>
+
+        <strong>
+            {{ booking.get_status_display }}
+        </strong>
+
+    </p>
+
+
+    <div class="actions">
+
+
+        {% if booking.status == 'pending' %}
+
+        <form
+            method="POST"
+            action="{% url 'booking_confirm' booking.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                class="btn success"
+                type="submit"
+            >
+                Confirm
+            </button>
+
+        </form>
+
+
+        <form
+            method="POST"
+            action="{% url 'booking_reject' booking.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                class="btn danger"
+                type="submit"
+            >
+                Reject
+            </button>
+
+        </form>
+
+        {% endif %}
+
+
+        {% if booking.status == 'confirmed' %}
+
+        <form
+            method="POST"
+            action="{% url 'booking_check_in' booking.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                class="btn primary"
+                type="submit"
+            >
+                Check In
+            </button>
+
+        </form>
+
+        {% endif %}
+
+
+        {% if booking.status == 'checked_in' %}
+
+        <form
+            method="POST"
+            action="{% url 'booking_complete' booking.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                class="btn success"
+                type="submit"
+            >
+                Complete
+            </button>
+
+        </form>
+
+        {% endif %}
+
+
+        {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+
+        <form
+            method="POST"
+            action="{% url 'booking_cancel' booking.id %}"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="reason"
+                value="Cancelled by administrator."
+            >
+
+            <button
+                class="btn danger"
+                type="submit"
+            >
+                Cancel
+            </button>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- PAYMENT -->
+
+<div class="card">
+
+    <h2>
+        Payment
+    </h2>
+
+
+    <div class="row">
+
+        <span class="label">
+            Total
+        </span>
+
+        <strong>
+            {{ booking.total_amount }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Paid
+        </span>
+
+        <strong>
+            {{ booking.amount_paid }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Balance
+        </span>
+
+        <strong>
+            {{ booking.balance }}
+        </strong>
+
+    </div>
+
+
+    <div class="row">
+
+        <span class="label">
+            Status
+        </span>
+
+        <span>
+            {{ booking.get_payment_status_display }}
+        </span>
+
+    </div>
+
+
+    <hr>
+
+
+    {% if booking.balance > 0 %}
+
+    <form
+        method="POST"
+        action="{% url 'booking_payment' booking.id %}"
+    >
+
+        {% csrf_token %}
+
+        <label>
+            Record Payment
+        </label>
+
+        <br><br>
+
+        <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            max="{{ booking.balance }}"
+            name="amount"
+            placeholder="Amount"
+            required
+        >
+
+        <br><br>
+
+        <button
+            type="submit"
+            class="btn success"
+        >
+            Record Payment
+        </button>
+
+    </form>
+
+    {% else %}
+
+    <p>
+        ✓ Booking fully paid.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ACTIONS -->
+
+<div class="card">
+
+    <h2>
+        Administration
+    </h2>
+
+
+    <a
+        href="{% url 'booking_edit' booking.id %}"
+        class="btn secondary"
+    >
+        Edit Booking
+    </a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
